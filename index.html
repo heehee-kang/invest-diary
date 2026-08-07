@@ -979,7 +979,7 @@
     flex-shrink: 0;
   }
   .modal-item-del:hover { color: var(--text-primary); }
-  .modal-category-select { display: flex; gap: 6px; margin-bottom: 8px; }
+  .modal-category-select { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
   .modal-custom-cat-input {
     width: 100%;
     border: 1px solid var(--border);
@@ -1003,6 +1003,9 @@
   .cat-btn.cat-earnings.active { background: #8b5cf6; color: #fff; border-color: #8b5cf6; }
   .cat-btn.cat-disclosure.active { background: #f0993d; color: #fff; border-color: #f0993d; }
   .cat-btn.cat-holiday.active { background: #3d6fb4; color: #fff; border-color: #3d6fb4; }
+  .cat-btn.cat-fear.active { background: #dc2626; color: #fff; border-color: #dc2626; }
+  .cat-btn.cat-vix.active { background: #059669; color: #fff; border-color: #059669; }
+  .cat-btn.cat-tenyr.active { background: #0891b2; color: #fff; border-color: #0891b2; }
   .cat-btn.cat-custom.active { background: #6b7280; color: #fff; border-color: #6b7280; }
   .modal-input-row { display: flex; gap: 6px; }
   .modal-input-row input {
@@ -1055,20 +1058,6 @@
         <div class="home-week-grid" id="homeWeekGrid"></div>
       </div>
 
-      <div class="card-grid-3" style="margin-top:14px;">
-        <div class="card">
-          <div class="card-label">S&amp;P 500</div>
-          <div class="card-value">-</div>
-        </div>
-        <div class="card">
-          <div class="card-label">나스닥</div>
-          <div class="card-value">-</div>
-        </div>
-        <div class="card">
-          <div class="card-label">다우</div>
-          <div class="card-value">-</div>
-        </div>
-      </div>
       <div class="card-grid-2">
         <div class="card" id="homeDiaryCard">
           <div class="card-heading">&#128221; 오늘의 일기</div>
@@ -1410,6 +1399,9 @@
         <button type="button" class="cat-btn cat-earnings" data-cat="earnings">실적발표</button>
         <button type="button" class="cat-btn cat-disclosure" data-cat="disclosure">공시</button>
         <button type="button" class="cat-btn cat-holiday" data-cat="holiday">휴무일</button>
+        <button type="button" class="cat-btn cat-fear" data-cat="fear">공포지수</button>
+        <button type="button" class="cat-btn cat-vix" data-cat="vix">VIX지수</button>
+        <button type="button" class="cat-btn cat-tenyr" data-cat="tenyr">10년물국채금리</button>
         <button type="button" class="cat-btn cat-custom" data-cat="custom">직접입력</button>
       </div>
       <input type="text" id="customCatInput" class="modal-custom-cat-input" placeholder="카테고리 이름 입력 후 Enter" style="display:none;">
@@ -1471,7 +1463,10 @@
   const EVENT_CATS = {
     earnings: { label: '실적발표', color: '#8b5cf6' },
     disclosure: { label: '공시', color: '#f0993d' },
-    holiday: { label: '휴무일', color: '#3d6fb4' }
+    holiday: { label: '휴무일', color: '#3d6fb4' },
+    fear: { label: '공포지수', color: '#dc2626' },
+    vix: { label: 'VIX지수', color: '#059669' },
+    tenyr: { label: '10년물국채금리', color: '#0891b2' }
   };
   const EVENTS_KEY = 'invest-journal-calendar-events';
   let calendarEvents = JSON.parse(localStorage.getItem(EVENTS_KEY) || '{}');
@@ -3276,18 +3271,12 @@
       if (i === 0) cell.classList.add('sunday');
       if (i === 6) cell.classList.add('saturday');
       if (key === todayKey) cell.classList.add('today');
-      const entry = diaryData[key];
       const dayEvents = calendarEvents[key] || [];
       const hasEvents = dayEvents.length > 0;
-      const EVT_HL_COLOR = { earnings: '#e4d8fb', disclosure: '#fbe0c2', holiday: '#d3e2f5', custom: '#e2e2e0' };
+      const EVT_HL_COLOR = { earnings: '#e4d8fb', disclosure: '#fbe0c2', holiday: '#d3e2f5', fear: '#fbd5d5', vix: '#c9ecdc', tenyr: '#c8ecf3', custom: '#e2e2e0' };
 
       let previewParts = [];
       let previewHtmlParts = [];
-      if (entry && entry.summary) { previewParts.push(entry.summary); previewHtmlParts.push(escapeHtml(entry.summary)); }
-      if (entry && entry.content) {
-        const stripped = stripHtmlPreview(entry.content, 60);
-        if (stripped) { previewParts.push(stripped); previewHtmlParts.push(escapeHtml(stripped)); }
-      }
       dayEvents.forEach(ev => {
         previewParts.push(ev.text);
         const hl = EVT_HL_COLOR[ev.cat] || EVT_HL_COLOR.custom;
@@ -3343,11 +3332,10 @@
     const calCard = document.getElementById('homeCalendarCard');
     const todayEvents = calendarEvents[todayKey] || [];
     if (todayEvents.length) {
-      const catLabel = { earnings: '실적발표', disclosure: '공시', holiday: '휴무일' };
       calCard.innerHTML = '<div class="card-heading">&#128197; 오늘의 캘린더 이슈</div>' +
         todayEvents.map(ev => {
-          const label = ev.cat === 'custom' ? (ev.customLabel || '기타') : catLabel[ev.cat];
-          return '<div class="home-item-row"><span class="home-cat-badge cat-' + ev.cat + '">' + escapeHtml(label) + '</span><span>' + escapeHtml(ev.text) + '</span></div>';
+          const meta = getCatMeta(ev);
+          return '<div class="home-item-row"><span class="home-cat-badge" style="background:' + meta.color + ';">' + escapeHtml(meta.label) + '</span><span>' + escapeHtml(ev.text) + '</span></div>';
         }).join('');
     } else {
       calCard.innerHTML = '<div class="card-heading">&#128197; 오늘의 캘린더 이슈</div><div class="card-empty">등록된 이슈가 없습니다.</div>';
