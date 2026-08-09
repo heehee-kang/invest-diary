@@ -797,6 +797,10 @@
   .study-todo-item .study-todo-del:hover { color: var(--text-primary); }
   .study-todo-item .study-todo-del.confirm-active { color: #e0503c; font-weight: 600; font-size: 11px; }
   .study-todo-empty { font-size: 12px; color: var(--text-muted); }
+  .study-log-source-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  .source-tab { border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); border-radius: 999px; padding: 5px 12px; font-size: 12px; cursor: pointer; }
+  .source-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .study-log-source-badge { font-size: 11px; color: var(--text-muted); margin-left: 6px; }
   .risk-add-row { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
   .risk-add-row input { flex: 1; border: 1px solid var(--border); border-radius: 7px; padding: 7px 10px; font-size: 13px; background: var(--bg-page); color: var(--text-primary); }
   .risk-dot-btn { width: 22px; height: 22px; border-radius: 50%; padding: 0; cursor: pointer; flex-shrink: 0; box-sizing: border-box; }
@@ -1038,6 +1042,7 @@
     <div class="menu-item active" data-page="home"><span class="menu-icon">&#9679;</span>홈</div>
     <div class="menu-item" data-page="calendar"><span class="menu-icon">&#128197;</span>캘린더+일기</div>
     <div class="menu-item" data-page="study"><span class="menu-icon">&#128218;</span>공부</div>
+    <div class="menu-item" data-page="monkey"><span class="menu-icon">&#128018;</span>몽키수업</div>
     <div class="menu-item" data-page="philosophy"><span class="menu-icon">&#128161;</span>투자삶철학</div>
     <div class="menu-item" data-page="industry"><span class="menu-icon">&#128202;</span>산업분석</div>
     <div class="menu-item" data-page="trades"><span class="menu-icon">&#128221;</span>투자매매일지</div>
@@ -1172,25 +1177,11 @@
         <div class="card study-box">
           <div class="doc-header">
             <div class="doc-header-title">챙겨야 할 것</div>
-            <button id="studyCheckEditBtn" class="diary-edit-btn">수정</button>
           </div>
-          <div class="toolbar" id="studyCheckToolbar" style="display:none;">
-            <button data-cmd="bold" title="굵게"><b>B</b></button>
-            <button data-cmd="underline" title="밑줄"><u>U</u></button>
-            <span class="toolbar-sep"></span>
-            <button class="swatch-btn" data-hl="#ffe680" title="노랑 형광펜" style="background:#ffe680;"></button>
-            <button class="swatch-btn" data-hl="#ffc2dd" title="분홍 형광펜" style="background:#ffc2dd;"></button>
-            <span class="toolbar-sep"></span>
-            <button class="swatch-btn text-swatch" data-color="#e0503c" title="빨강 글자" style="color:#e0503c;">A</button>
-            <button class="swatch-btn text-swatch" data-color="#3d6fb4" title="파랑 글자" style="color:#3d6fb4;">A</button>
-            <button class="swatch-btn text-swatch" data-color="#2c2c2a" title="검정 글자" style="color:#2c2c2a;">A</button>
-            <span class="toolbar-sep"></span>
-            <button data-cmd="bullet" title="문단부호">&#8226;</button>
-            <button data-cmd="dash" title="대시">&#8211;</button>
-            <button data-cmd="number" title="번호리스트">1.</button>
-            <button data-cmd="toggle" title="토글 블록">&#9656;</button>
+          <div class="study-todo-add">
+            <input type="text" id="studyCheckInput" placeholder="챙겨야 할 내용을 입력하고 Enter">
           </div>
-          <div class="diary-editor study-editor" id="studyCheckEditor" contenteditable="false" data-placeholder="챙겨야 할 것을 적어보세요..."></div>
+          <div class="study-todo-list" id="studyCheckList"></div>
         </div>
         <div class="card study-box">
           <div class="doc-header">
@@ -1235,8 +1226,51 @@
           </select>
           <div class="study-log-tag-filters" id="studyLogTagFilters"></div>
         </div>
+        <div class="study-log-source-tabs" id="studyLogSourceTabs">
+          <button type="button" class="source-tab active" data-source="all">전체</button>
+          <button type="button" class="source-tab" data-source="todo">오늘 공부할 것</button>
+          <button type="button" class="source-tab" data-source="check">챙겨야 할 것</button>
+        </div>
         <div class="study-log-list" id="studyLogList"></div>
         <div class="pagination-controls" id="studyLogPagination"></div>
+      </div>
+    </div>
+    <div id="page-monkey" class="page-section">
+      <div class="page-title">몽키수업</div>
+      <div class="hashtag-search-bar" style="max-width:none;">
+        <input type="text" id="monkeySearchInput" placeholder="몽키수업 기록에서 검색" style="max-width:none;">
+      </div>
+      <div class="card study-log-card">
+        <div class="doc-header-title" style="margin-bottom: 10px;">오늘의 기록</div>
+        <div class="study-todo-add">
+          <input type="text" id="monkeyLogInput" placeholder="기록 제목을 적고 Enter">
+        </div>
+        <div class="toolbar" id="monkeyLogToolbar" style="margin-bottom: 10px;">
+          <button data-cmd="bold" title="굵게"><b>B</b></button>
+          <button data-cmd="underline" title="밑줄"><u>U</u></button>
+          <span class="toolbar-sep"></span>
+          <button class="swatch-btn" data-hl="#ffe680" title="노랑 형광펜" style="background:#ffe680;"></button>
+          <button class="swatch-btn" data-hl="#ffc2dd" title="분홍 형광펜" style="background:#ffc2dd;"></button>
+          <span class="toolbar-sep"></span>
+          <button class="swatch-btn text-swatch" data-color="#e0503c" title="빨강 글자" style="color:#e0503c;">A</button>
+          <button class="swatch-btn text-swatch" data-color="#3d6fb4" title="파랑 글자" style="color:#3d6fb4;">A</button>
+          <button class="swatch-btn text-swatch" data-color="#2c2c2a" title="검정 글자" style="color:#2c2c2a;">A</button>
+          <span class="toolbar-sep"></span>
+          <button data-cmd="bullet" title="문단부호">&#8226;</button>
+          <button data-cmd="dash" title="대시">&#8211;</button>
+          <button data-cmd="number" title="번호리스트">1.</button>
+          <button data-cmd="toggle" title="토글 블록">&#9656;</button>
+        </div>
+        <div class="study-log-filter-row">
+          <select id="monkeyLogPeriodFilter">
+            <option value="all">전체 기간</option>
+            <option value="week">이번 주</option>
+            <option value="month">이번 달</option>
+          </select>
+          <div class="study-log-tag-filters" id="monkeyLogTagFilters"></div>
+        </div>
+        <div class="study-log-list" id="monkeyLogList"></div>
+        <div class="pagination-controls" id="monkeyLogPagination"></div>
       </div>
     </div>
     <div id="page-philosophy" class="page-section">
@@ -2198,43 +2232,12 @@
   try { studyData = JSON.parse(localStorage.getItem(STUDY_KEY) || '{}'); } catch (e) { studyData = {}; }
   if (!studyData || typeof studyData !== 'object') studyData = {};
   if (!Array.isArray(studyData.todos)) studyData.todos = [];
+  if (!Array.isArray(studyData.checkTodos)) studyData.checkTodos = [];
   if (!Array.isArray(studyData.log)) studyData.log = [];
   if (!Array.isArray(studyData.riskItems)) studyData.riskItems = [];
   function saveStudyData() { localStorage.setItem(STUDY_KEY, JSON.stringify(studyData)); }
 
-  const isEditingStudy = { check: false };
-
-  function updateStudyEditUI(key, editorId, toolbarId, btnId) {
-    const editing = isEditingStudy[key];
-    document.getElementById(editorId).contentEditable = editing ? 'true' : 'false';
-    document.getElementById(toolbarId).style.display = editing ? 'flex' : 'none';
-    const btn = document.getElementById(btnId);
-    btn.textContent = editing ? '저장' : '수정';
-    btn.classList.toggle('editing', editing);
-  }
-
-  function toggleStudyEdit(key, editorId, toolbarId, btnId) {
-    if (!isEditingStudy[key]) {
-      isEditingStudy[key] = true;
-      updateStudyEditUI(key, editorId, toolbarId, btnId);
-      document.getElementById(editorId).focus();
-    } else {
-      studyData[key] = document.getElementById(editorId).innerHTML;
-      saveStudyData();
-      isEditingStudy[key] = false;
-      updateStudyEditUI(key, editorId, toolbarId, btnId);
-    }
-  }
-
-  function saveAllStudyEdits() {
-    if (isEditingStudy.check) toggleStudyEdit('check', 'studyCheckEditor', 'studyCheckToolbar', 'studyCheckEditBtn');
-  }
-
-  document.getElementById('studyCheckEditor').innerHTML = studyData.check || '';
-
-  document.getElementById('studyCheckEditBtn').addEventListener('click', () => toggleStudyEdit('check', 'studyCheckEditor', 'studyCheckToolbar', 'studyCheckEditBtn'));
-
-  bindRichEditor('studyCheckToolbar', 'studyCheckEditor');
+  function saveAllStudyEdits() {}
 
   /* ===== 리스크 (신호등 색 선택형 리스트) ===== */
   const RISK_LABEL = { low: '낮음', mid: '보통', high: '높음' };
@@ -2357,15 +2360,22 @@
 
   renderRiskItems();
 
-  function renderStudyTodos() {
-    const list = document.getElementById('studyTodoList');
-    const todos = studyData.todos || [];
+  const STUDY_SOURCE_LABEL = { todo: '오늘 공부할 것', check: '챙겨야 할 것' };
+
+  function logStudyItem(text, source) {
+    if (!Array.isArray(studyData.log)) studyData.log = [];
+    studyData.log.unshift({ id: genId(), date: formatDateKey(new Date()), title: text, content: '', tags: [], source: source });
+  }
+
+  function renderChecklist(dataKey, listId, source) {
+    const list = document.getElementById(listId);
+    const items = studyData[dataKey] || [];
     list.innerHTML = '';
-    if (!todos.length) {
+    if (!items.length) {
       list.innerHTML = '<div class="study-todo-empty">아직 추가된 항목이 없습니다.</div>';
       return;
     }
-    todos.forEach(item => {
+    items.forEach(item => {
       const row = document.createElement('div');
       row.className = 'study-todo-item';
       const cb = document.createElement('input');
@@ -2386,14 +2396,31 @@
       del.title = '삭제';
       del.textContent = '\u00d7';
       attachConfirmDelete(del, () => {
-        studyData.todos = (studyData.todos || []).filter(t => t.id !== item.id);
+        studyData[dataKey] = (studyData[dataKey] || []).filter(t => t.id !== item.id);
         saveStudyData();
-        renderStudyTodos();
+        renderChecklist(dataKey, listId, source);
       });
       row.appendChild(del);
       list.appendChild(row);
     });
   }
+
+  function addChecklistItem(dataKey, listId, inputId, source) {
+    const input = document.getElementById(inputId);
+    const text = input.value.trim();
+    if (!text) return;
+    if (!Array.isArray(studyData[dataKey])) studyData[dataKey] = [];
+    studyData[dataKey].push({ id: genId(), text: text, done: false });
+    logStudyItem(text, source);
+    saveStudyData();
+    input.value = '';
+    renderChecklist(dataKey, listId, source);
+    if (typeof renderStudyLog === 'function') renderStudyLog();
+    if (typeof renderHomeDashboard === 'function') renderHomeDashboard();
+  }
+
+  function renderStudyTodos() { renderChecklist('todos', 'studyTodoList', 'todo'); }
+  function renderStudyCheckTodos() { renderChecklist('checkTodos', 'studyCheckList', 'check'); }
 
   let studySearchQuery = '';
   let studyPeriodFilter = 'all';
@@ -2436,6 +2463,8 @@
     });
   }
 
+  let studyLogSourceFilter = 'all';
+
   function renderStudyLog() {
     const list = document.getElementById('studyLogList');
     const paginationEl = document.getElementById('studyLogPagination');
@@ -2446,11 +2475,12 @@
       if (q && !((item.title || item.text || '').toLowerCase().includes(q) || (item.content || '').toLowerCase().includes(q))) return false;
       if (studyTagFilter && !(item.tags || []).includes(studyTagFilter)) return false;
       if (!studyItemInPeriod(item)) return false;
+      if (studyLogSourceFilter !== 'all' && item.source !== studyLogSourceFilter) return false;
       return true;
     });
     list.innerHTML = '';
     if (!filtered.length) {
-      list.innerHTML = '<div class="study-log-empty">' + ((q || studyTagFilter || studyPeriodFilter !== 'all') ? '조건에 맞는 기록이 없습니다.' : '아직 공부 기록이 없습니다.') + '</div>';
+      list.innerHTML = '<div class="study-log-empty">' + ((q || studyTagFilter || studyPeriodFilter !== 'all' || studyLogSourceFilter !== 'all') ? '조건에 맞는 기록이 없습니다.' : '아직 공부 기록이 없습니다.') + '</div>';
       paginationEl.innerHTML = '';
       return;
     }
@@ -2471,6 +2501,12 @@
       titleEl.className = 'study-log-title';
       titleEl.textContent = item.title || item.text || '';
       header.appendChild(titleEl);
+      if (item.source && STUDY_SOURCE_LABEL[item.source]) {
+        const srcBadge = document.createElement('span');
+        srcBadge.className = 'study-log-source-badge';
+        srcBadge.textContent = STUDY_SOURCE_LABEL[item.source];
+        header.appendChild(srcBadge);
+      }
       const del = document.createElement('button');
       del.className = 'study-log-del';
       del.title = '삭제';
@@ -2609,18 +2645,12 @@
 
   document.getElementById('studyTodoInput').addEventListener('keydown', (e) => {
     if (e.key !== 'Enter') return;
-    const input = e.target;
-    const text = input.value.trim();
-    if (!text) return;
-    if (!Array.isArray(studyData.todos)) studyData.todos = [];
-    studyData.todos.push({ id: genId(), text, done: false });
-    if (!Array.isArray(studyData.log)) studyData.log = [];
-    studyData.log.unshift({ id: genId(), title: text, content: '', date: formatDateKey(new Date()) });
-    saveStudyData();
-    input.value = '';
-    studyLogPage = 1;
-    renderStudyTodos();
-    renderStudyLog();
+    addChecklistItem('todos', 'studyTodoList', 'studyTodoInput', 'todo');
+  });
+
+  document.getElementById('studyCheckInput').addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    addChecklistItem('checkTodos', 'studyCheckList', 'studyCheckInput', 'check');
   });
 
   document.getElementById('studyLogInput').addEventListener('keydown', (e) => {
@@ -2642,8 +2672,229 @@
     renderStudyLog();
   });
 
+  document.querySelectorAll('#studyLogSourceTabs .source-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      studyLogSourceFilter = btn.dataset.source;
+      studyLogPage = 1;
+      document.querySelectorAll('#studyLogSourceTabs .source-tab').forEach(b => b.classList.toggle('active', b === btn));
+      renderStudyLog();
+    });
+  });
+
   renderStudyTodos();
+  renderStudyCheckTodos();
   renderStudyLog();
+
+  /* ===== 몽키수업 (일기장처럼 기록 + 검색/해시태그) ===== */
+  const MONKEY_KEY = 'invest-journal-monkey';
+  let monkeyData;
+  try { monkeyData = JSON.parse(localStorage.getItem(MONKEY_KEY) || '{}'); } catch (e) { monkeyData = {}; }
+  if (!monkeyData || typeof monkeyData !== 'object') monkeyData = {};
+  if (!Array.isArray(monkeyData.log)) monkeyData.log = [];
+  function saveMonkeyData() { localStorage.setItem(MONKEY_KEY, JSON.stringify(monkeyData)); }
+
+  let monkeySearchQuery = '';
+  let monkeyPeriodFilter = 'all';
+  let monkeyTagFilter = null;
+  let monkeyLogPage = 1;
+
+  function monkeyItemInPeriod(item) {
+    if (monkeyPeriodFilter === 'all') return true;
+    const [y, m, d] = item.date.split('-').map(Number);
+    const itemDate = new Date(y, m - 1, d);
+    const now = new Date();
+    if (monkeyPeriodFilter === 'week') {
+      const day = now.getDay();
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day);
+      const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6);
+      return itemDate >= start && itemDate <= end;
+    }
+    if (monkeyPeriodFilter === 'month') {
+      return itemDate.getFullYear() === now.getFullYear() && itemDate.getMonth() === now.getMonth();
+    }
+    return true;
+  }
+
+  function renderMonkeyLogTagFilters() {
+    const wrap = document.getElementById('monkeyLogTagFilters');
+    const allTags = new Set();
+    (monkeyData.log || []).forEach(item => (item.tags || []).forEach(t => allTags.add(t)));
+    if (monkeyTagFilter && !allTags.has(monkeyTagFilter)) monkeyTagFilter = null;
+    wrap.innerHTML = '';
+    allTags.forEach(tag => {
+      const chip = document.createElement('span');
+      chip.className = 'study-log-tag-filter-chip' + (monkeyTagFilter === tag ? ' active' : '');
+      chip.textContent = '#' + tag;
+      chip.addEventListener('click', () => {
+        monkeyTagFilter = monkeyTagFilter === tag ? null : tag;
+        monkeyLogPage = 1;
+        renderMonkeyLog();
+      });
+      wrap.appendChild(chip);
+    });
+  }
+
+  let activeMonkeyLogEditor = null;
+
+  function renderMonkeyLog() {
+    const list = document.getElementById('monkeyLogList');
+    const paginationEl = document.getElementById('monkeyLogPagination');
+    const log = monkeyData.log || [];
+    const q = monkeySearchQuery.trim().toLowerCase();
+    renderMonkeyLogTagFilters();
+    const filtered = log.filter(item => {
+      if (q && !((item.title || '').toLowerCase().includes(q) || (item.content || '').toLowerCase().includes(q))) return false;
+      if (monkeyTagFilter && !(item.tags || []).includes(monkeyTagFilter)) return false;
+      if (!monkeyItemInPeriod(item)) return false;
+      return true;
+    });
+    list.innerHTML = '';
+    if (!filtered.length) {
+      list.innerHTML = '<div class="study-log-empty">' + ((q || monkeyTagFilter || monkeyPeriodFilter !== 'all') ? '조건에 맞는 기록이 없습니다.' : '아직 몽키수업 기록이 없습니다.') + '</div>';
+      paginationEl.innerHTML = '';
+      return;
+    }
+    const { pageItems: paginatedLog, page, totalPages } = paginateItems(filtered, monkeyLogPage, PAGE_SIZE);
+    monkeyLogPage = page;
+    paginatedLog.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'study-log-item';
+
+      const header = document.createElement('div');
+      header.className = 'study-log-header';
+      const dateEl = document.createElement('span');
+      dateEl.className = 'study-log-date';
+      const parts = item.date.split('-');
+      dateEl.textContent = parts[1] + '.' + parts[2];
+      header.appendChild(dateEl);
+      const titleEl = document.createElement('span');
+      titleEl.className = 'study-log-title';
+      titleEl.textContent = item.title || '';
+      header.appendChild(titleEl);
+      const del = document.createElement('button');
+      del.className = 'study-log-del';
+      del.title = '삭제';
+      del.textContent = '\u00d7';
+      attachConfirmDelete(del, () => {
+        monkeyData.log = (monkeyData.log || []).filter(l => l.id !== item.id);
+        saveMonkeyData();
+        renderMonkeyLog();
+      });
+      header.appendChild(del);
+      card.appendChild(header);
+
+      const editor = document.createElement('div');
+      editor.className = 'diary-editor study-log-content';
+      editor.contentEditable = 'true';
+      editor.setAttribute('data-placeholder', '오늘 배운 내용을 적어보세요...');
+      editor.innerHTML = item.content || '';
+      editor.addEventListener('focus', () => { activeMonkeyLogEditor = editor; });
+      editor.addEventListener('input', () => {
+        item.content = editor.innerHTML;
+        clearTimeout(editor._saveTimer);
+        editor._saveTimer = setTimeout(saveMonkeyData, 400);
+      });
+      attachStudyLogEditorBehaviors(editor);
+      card.appendChild(editor);
+
+      const tagSection = document.createElement('div');
+      tagSection.className = 'tag-section';
+      const tagInput = document.createElement('input');
+      tagInput.type = 'text';
+      tagInput.className = 'tag-input';
+      tagInput.placeholder = '해시태그 입력 후 Enter';
+      tagInput.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter') return;
+        const tag = tagInput.value.trim().replace(/^#/, '');
+        if (!tag) return;
+        if (!Array.isArray(item.tags)) item.tags = [];
+        if (!item.tags.includes(tag)) item.tags.push(tag);
+        saveMonkeyData();
+        tagInput.value = '';
+        renderMonkeyLog();
+      });
+      tagSection.appendChild(tagInput);
+      const chips = document.createElement('div');
+      chips.className = 'tag-chips';
+      (item.tags || []).forEach(tag => {
+        const chip = document.createElement('span');
+        chip.className = 'tag-chip';
+        const label = document.createElement('span');
+        label.textContent = '#' + tag;
+        chip.appendChild(label);
+        const delTag = document.createElement('span');
+        delTag.className = 'tag-chip-del';
+        delTag.textContent = '\u00d7';
+        delTag.addEventListener('click', () => {
+          item.tags = (item.tags || []).filter(t => t !== tag);
+          saveMonkeyData();
+          renderMonkeyLog();
+        });
+        chip.appendChild(delTag);
+        chips.appendChild(chip);
+      });
+      tagSection.appendChild(chips);
+      card.appendChild(tagSection);
+
+      list.appendChild(card);
+    });
+
+    renderPagination(paginationEl, page, totalPages, (newPage) => {
+      monkeyLogPage = newPage;
+      renderMonkeyLog();
+    });
+  }
+
+  document.getElementById('monkeyLogPeriodFilter').addEventListener('change', (e) => {
+    monkeyPeriodFilter = e.target.value;
+    monkeyLogPage = 1;
+    renderMonkeyLog();
+  });
+
+  document.getElementById('monkeyLogToolbar').addEventListener('click', (e) => {
+    if (!activeMonkeyLogEditor) return;
+    const swatchHl = e.target.closest('button[data-hl]');
+    const swatchColor = e.target.closest('button[data-color]');
+    const btn = e.target.closest('button[data-cmd]');
+    activeMonkeyLogEditor.focus();
+    if (swatchHl) {
+      applyHighlight(swatchHl.dataset.hl);
+    } else if (swatchColor) {
+      document.execCommand('foreColor', false, swatchColor.dataset.color);
+    } else if (btn) {
+      const cmd = btn.dataset.cmd;
+      if (cmd === 'bold') document.execCommand('bold');
+      else if (cmd === 'underline') document.execCommand('underline');
+      else if (cmd === 'bullet') document.execCommand('insertUnorderedList');
+      else if (cmd === 'dash') insertDashList();
+      else if (cmd === 'number') document.execCommand('insertOrderedList');
+      else if (cmd === 'toggle') insertToggleBlock();
+    } else {
+      return;
+    }
+    activeMonkeyLogEditor.dispatchEvent(new Event('input'));
+  });
+
+  document.getElementById('monkeyLogInput').addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    const input = e.target;
+    const title = input.value.trim();
+    if (!title) return;
+    if (!Array.isArray(monkeyData.log)) monkeyData.log = [];
+    monkeyData.log.unshift({ id: genId(), title: title, content: '', date: formatDateKey(new Date()), tags: [] });
+    saveMonkeyData();
+    input.value = '';
+    monkeyLogPage = 1;
+    renderMonkeyLog();
+  });
+
+  document.getElementById('monkeySearchInput').addEventListener('input', (e) => {
+    monkeySearchQuery = e.target.value;
+    monkeyLogPage = 1;
+    renderMonkeyLog();
+  });
+
+  renderMonkeyLog();
 
   /* ===== 투자삶철학 (폴더 트리 + 문서) ===== */
   const PHIL_TREE_KEY = 'invest-journal-philosophy-tree';
@@ -3323,10 +3574,12 @@
       let previewParts = [];
       let previewHtmlParts = [];
       dayEvents.forEach(ev => {
+        const meta = getCatMeta(ev);
         const display = formatEventDisplay(ev);
-        previewParts.push(display);
+        const labeled = VALUE_CATS.indexOf(ev.cat) !== -1 ? (meta.label + ' ' + display) : display;
+        previewParts.push(labeled);
         const hl = EVT_HL_COLOR[ev.cat] || EVT_HL_COLOR.custom;
-        previewHtmlParts.push('<span style="background:' + hl + ';color:#2c2c2a;border-radius:3px;padding:0 2px;">' + escapeHtml(display) + '</span>');
+        previewHtmlParts.push('<span style="background:' + hl + ';color:#2c2c2a;border-radius:3px;padding:0 2px;">' + escapeHtml(labeled) + '</span>');
       });
       const previewHtml = previewHtmlParts.join(' · ');
 
@@ -3397,13 +3650,12 @@
     }
 
     const checkCardEl = document.getElementById('homeStudyCheckCard');
-    const checkHtml = (typeof studyData !== 'undefined' && studyData.check) ? studyData.check : '';
-    const checkHasContent = checkHtml && checkHtml.replace(/<[^>]*>/g, '').trim() !== '';
-    if (checkHasContent) {
+    const checkTodos = (typeof studyData !== 'undefined' && Array.isArray(studyData.checkTodos)) ? studyData.checkTodos : [];
+    if (checkTodos.length) {
       checkCardEl.innerHTML = '<div class="card-heading">&#9989; 챙겨야 할 것</div>' +
-        '<div class="home-study-preview">' + checkHtml + '</div>';
+        checkTodos.map(t => '<div class="home-item-row"><span>' + escapeHtml(t.text) + '</span></div>').join('');
     } else {
-      checkCardEl.innerHTML = '<div class="card-heading">&#9989; 챙겨야 할 것</div><div class="card-empty">아직 작성된 내용이 없습니다.</div>';
+      checkCardEl.innerHTML = '<div class="card-heading">&#9989; 챙겨야 할 것</div><div class="card-empty">아직 추가된 항목이 없습니다.</div>';
     }
 
     const riskCardEl = document.getElementById('homeStudyCautionCard');
