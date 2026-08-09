@@ -980,6 +980,9 @@
   }
   .modal-item-del:hover { color: var(--text-primary); }
   .modal-category-select { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .modal-cat-group { margin-bottom: 4px; }
+  .modal-cat-group-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+  .modal-value-input { width: 100%; box-sizing: border-box; border: 1px solid var(--border); border-radius: 7px; padding: 8px 10px; font-size: 13px; background: var(--bg-page); color: var(--text-primary); margin-bottom: 8px; }
   .modal-custom-cat-input {
     width: 100%;
     border: 1px solid var(--border);
@@ -1395,16 +1398,25 @@
     </div>
     <div class="modal-list" id="eventModalList"></div>
     <div class="modal-form">
-      <div class="modal-category-select">
-        <button type="button" class="cat-btn cat-earnings" data-cat="earnings">실적발표</button>
-        <button type="button" class="cat-btn cat-disclosure" data-cat="disclosure">공시</button>
-        <button type="button" class="cat-btn cat-holiday" data-cat="holiday">휴무일</button>
-        <button type="button" class="cat-btn cat-fear" data-cat="fear">공포지수</button>
-        <button type="button" class="cat-btn cat-vix" data-cat="vix">VIX지수</button>
-        <button type="button" class="cat-btn cat-tenyr" data-cat="tenyr">10년물국채금리</button>
-        <button type="button" class="cat-btn cat-custom" data-cat="custom">직접입력</button>
+      <div class="modal-cat-group">
+        <div class="modal-cat-group-label">일정</div>
+        <div class="modal-category-select">
+          <button type="button" class="cat-btn cat-earnings" data-cat="earnings">실적발표</button>
+          <button type="button" class="cat-btn cat-disclosure" data-cat="disclosure">공시</button>
+          <button type="button" class="cat-btn cat-holiday" data-cat="holiday">휴무일</button>
+          <button type="button" class="cat-btn cat-custom" data-cat="custom">직접입력</button>
+        </div>
+      </div>
+      <div class="modal-cat-group">
+        <div class="modal-cat-group-label">시장 지표</div>
+        <div class="modal-category-select">
+          <button type="button" class="cat-btn cat-fear" data-cat="fear">공포지수</button>
+          <button type="button" class="cat-btn cat-vix" data-cat="vix">VIX지수</button>
+          <button type="button" class="cat-btn cat-tenyr" data-cat="tenyr">10년물국채금리</button>
+        </div>
       </div>
       <input type="text" id="customCatInput" class="modal-custom-cat-input" placeholder="카테고리 이름 입력 후 Enter" style="display:none;">
+      <input type="text" id="eventValueInput" class="modal-value-input" placeholder="수치 입력 (예: 32.5)" style="display:none;">
       <div class="modal-input-row">
         <input type="text" id="eventModalInput" placeholder="내용을 입력하세요">
         <button id="eventModalAdd">추가</button>
@@ -1529,6 +1541,13 @@
     if (item.cat === 'custom') return { label: item.customLabel || '기타', color: CUSTOM_CAT_COLOR };
     return EVENT_CATS[item.cat];
   }
+  const VALUE_CATS = ['fear', 'vix', 'tenyr'];
+  function formatEventDisplay(item) {
+    if (VALUE_CATS.indexOf(item.cat) !== -1 && item.value) {
+      return item.text ? (item.value + ' · ' + item.text) : item.value;
+    }
+    return item.text;
+  }
 
   function renderCalendar() {
     const grid = document.getElementById('calGrid');
@@ -1611,7 +1630,7 @@
           rDot.style.background = meta.color;
           const rText = document.createElement('span');
           rText.className = 'cal-day-event-text';
-          rText.textContent = ev.text;
+          rText.textContent = formatEventDisplay(ev);
           row.appendChild(rDot);
           row.appendChild(rText);
           list.appendChild(row);
@@ -1944,6 +1963,10 @@
     const customInput = document.getElementById('customCatInput');
     customInput.style.display = 'none';
     customInput.value = '';
+    const valueInput = document.getElementById('eventValueInput');
+    valueInput.style.display = 'none';
+    valueInput.value = '';
+    document.getElementById('eventModalInput').placeholder = '내용을 입력하세요';
     document.getElementById('eventModalDate').textContent = formatDisplayDate(key);
     renderEventModalCategoryButtons();
     renderEventModalList();
@@ -1973,7 +1996,7 @@
       row.className = 'modal-item';
       row.innerHTML = '<span class="modal-item-dot" style="background:' + meta.color + '"></span>' +
         '<span class="modal-item-cat">' + escapeHtml(meta.label) + '</span>' +
-        '<span class="modal-item-text">' + escapeHtml(item.text) + '</span>';
+        '<span class="modal-item-text">' + escapeHtml(formatEventDisplay(item)) + '</span>';
       const delBtn = document.createElement('button');
       delBtn.className = 'modal-item-del';
       delBtn.textContent = '×';
@@ -1991,17 +2014,30 @@
   document.querySelectorAll('#eventModal .cat-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const customInput = document.getElementById('customCatInput');
+      const valueInput = document.getElementById('eventValueInput');
+      const textInput = document.getElementById('eventModalInput');
       if (btn.dataset.cat === 'custom') {
         modalSelectedCat = 'custom';
         renderEventModalCategoryButtons();
         customInput.style.display = 'block';
         customInput.value = modalCustomLabel || '';
+        valueInput.style.display = 'none';
+        textInput.placeholder = '내용을 입력하세요';
         customInput.focus();
         return;
       }
       customInput.style.display = 'none';
       modalSelectedCat = btn.dataset.cat;
       renderEventModalCategoryButtons();
+      if (VALUE_CATS.indexOf(modalSelectedCat) !== -1) {
+        valueInput.style.display = 'block';
+        valueInput.placeholder = (EVENT_CATS[modalSelectedCat].label) + ' 수치 입력 (예: 32.5)';
+        textInput.placeholder = '코멘트 입력 (선택)';
+        valueInput.focus();
+      } else {
+        valueInput.style.display = 'none';
+        textInput.placeholder = '내용을 입력하세요';
+      }
     });
   });
 
@@ -2019,8 +2055,15 @@
 
   function addEventFromModal() {
     const input = document.getElementById('eventModalInput');
+    const valueInput = document.getElementById('eventValueInput');
     const text = input.value.trim();
-    if (!text || !modalDateKey) return;
+    const isValueCat = VALUE_CATS.indexOf(modalSelectedCat) !== -1;
+    const value = isValueCat ? valueInput.value.trim() : '';
+    if (isValueCat) {
+      if (!value || !modalDateKey) return;
+    } else {
+      if (!text || !modalDateKey) return;
+    }
     if (!calendarEvents[modalDateKey]) calendarEvents[modalDateKey] = [];
     const newItem = {
       id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
@@ -2028,9 +2071,11 @@
       text: text
     };
     if (modalSelectedCat === 'custom') newItem.customLabel = modalCustomLabel || '기타';
+    if (isValueCat) newItem.value = value;
     calendarEvents[modalDateKey].push(newItem);
     saveCalendarEvents();
     input.value = '';
+    valueInput.value = '';
     renderEventModalList();
     renderCalendar();
   }
@@ -3278,9 +3323,10 @@
       let previewParts = [];
       let previewHtmlParts = [];
       dayEvents.forEach(ev => {
-        previewParts.push(ev.text);
+        const display = formatEventDisplay(ev);
+        previewParts.push(display);
         const hl = EVT_HL_COLOR[ev.cat] || EVT_HL_COLOR.custom;
-        previewHtmlParts.push('<span style="background:' + hl + ';color:#2c2c2a;border-radius:3px;padding:0 2px;">' + escapeHtml(ev.text) + '</span>');
+        previewHtmlParts.push('<span style="background:' + hl + ';color:#2c2c2a;border-radius:3px;padding:0 2px;">' + escapeHtml(display) + '</span>');
       });
       const previewHtml = previewHtmlParts.join(' · ');
 
@@ -3335,7 +3381,7 @@
       calCard.innerHTML = '<div class="card-heading">&#128197; 오늘의 캘린더 이슈</div>' +
         todayEvents.map(ev => {
           const meta = getCatMeta(ev);
-          return '<div class="home-item-row"><span class="home-cat-badge" style="background:' + meta.color + ';">' + escapeHtml(meta.label) + '</span><span>' + escapeHtml(ev.text) + '</span></div>';
+          return '<div class="home-item-row"><span class="home-cat-badge" style="background:' + meta.color + ';">' + escapeHtml(meta.label) + '</span><span>' + escapeHtml(formatEventDisplay(ev)) + '</span></div>';
         }).join('');
     } else {
       calCard.innerHTML = '<div class="card-heading">&#128197; 오늘의 캘린더 이슈</div><div class="card-empty">등록된 이슈가 없습니다.</div>';
