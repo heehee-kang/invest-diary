@@ -656,9 +656,16 @@
   }
   .diary-editor ul { margin: 4px 0; padding-left: 20px; }
   .diary-editor ol { margin: 4px 0; padding-left: 20px; }
-  .diary-editor ul.list-dash { list-style: none; padding-left: 20px; }
-  .diary-editor ul.list-dash li { position: relative; }
-  .diary-editor ul.list-dash li::before { content: "–"; position: absolute; left: -16px; }
+  .diary-editor .indent-line { margin-left: 24px; }
+  .monkey-log-header { display: flex; align-items: center; gap: 8px; }
+  .monkey-log-caret { display: inline-block; font-size: 10px; color: var(--text-muted); transition: transform 0.15s; flex-shrink: 0; }
+  .monkey-log-item.open .monkey-log-caret { transform: rotate(90deg); }
+  .monkey-log-preview { font-size: 12px; color: var(--text-muted); padding: 2px 0 2px 18px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .monkey-log-item.open .monkey-log-preview { display: none; }
+  .monkey-log-body { display: none; margin-top: 8px; }
+  .monkey-log-item.open .monkey-log-body { display: block; }
+  .diary-editor ul li.list-dash { list-style: none; position: relative; }
+  .diary-editor ul li.list-dash::before { content: "–"; position: absolute; left: -16px; }
 
   /* 해시태그 검색 & 태그 입력 */
   .hashtag-search-bar { position: relative; margin-bottom: 14px; }
@@ -1136,6 +1143,7 @@
             <span class="toolbar-sep"></span>
             <button class="swatch-btn" data-hl="#ffe680" title="노랑 형광펜" style="background:#ffe680;"></button>
             <button class="swatch-btn" data-hl="#ffc2dd" title="분홍 형광펜" style="background:#ffc2dd;"></button>
+            <button class="swatch-btn" data-hl="#bde3f7" title="하늘색 형광펜" style="background:#bde3f7;"></button>
             <span class="toolbar-sep"></span>
             <button class="swatch-btn text-swatch" data-color="#e0503c" title="빨강 글자" style="color:#e0503c;">A</button>
             <button class="swatch-btn text-swatch" data-color="#3d6fb4" title="파랑 글자" style="color:#3d6fb4;">A</button>
@@ -1145,6 +1153,8 @@
             <button data-cmd="dash" title="대시">&#8211;</button>
             <button data-cmd="number" title="번호리스트">1.</button>
             <button data-cmd="toggle" title="토글 블록">&#9656;</button>
+            <span class="toolbar-sep"></span>
+            <button data-cmd="image" title="사진 첨부">&#128247;</button>
           </div>
           <div class="diary-editor" id="diaryEditor" contenteditable="true" data-placeholder="오늘의 기록을 남겨보세요..."></div>
           <div class="diary-ai-summary-row">
@@ -1208,6 +1218,7 @@
           <span class="toolbar-sep"></span>
           <button class="swatch-btn" data-hl="#ffe680" title="노랑 형광펜" style="background:#ffe680;"></button>
           <button class="swatch-btn" data-hl="#ffc2dd" title="분홍 형광펜" style="background:#ffc2dd;"></button>
+            <button class="swatch-btn" data-hl="#bde3f7" title="하늘색 형광펜" style="background:#bde3f7;"></button>
           <span class="toolbar-sep"></span>
           <button class="swatch-btn text-swatch" data-color="#e0503c" title="빨강 글자" style="color:#e0503c;">A</button>
           <button class="swatch-btn text-swatch" data-color="#3d6fb4" title="파랑 글자" style="color:#3d6fb4;">A</button>
@@ -1217,6 +1228,8 @@
           <button data-cmd="dash" title="대시">&#8211;</button>
           <button data-cmd="number" title="번호리스트">1.</button>
           <button data-cmd="toggle" title="토글 블록">&#9656;</button>
+            <span class="toolbar-sep"></span>
+            <button data-cmd="image" title="사진 첨부">&#128247;</button>
         </div>
         <div class="study-log-filter-row">
           <select id="studyLogPeriodFilter">
@@ -1242,15 +1255,18 @@
       </div>
       <div class="card study-log-card">
         <div class="doc-header-title" style="margin-bottom: 10px;">오늘의 기록</div>
-        <div class="study-todo-add">
-          <input type="text" id="monkeyLogInput" placeholder="기록 제목을 적고 Enter">
+        <div class="study-todo-add" style="display:flex; gap:8px; align-items:center;">
+          <input type="text" id="monkeyLogInput" placeholder="기록 제목을 적고 Enter" style="flex:1;">
+          <input type="date" id="monkeyLogDateInput" style="border:1px solid var(--border); border-radius:7px; padding:7px 10px; font-size:13px; background:var(--bg-page); color:var(--text-primary);">
         </div>
+        <input type="text" id="monkeyLogTagInput" class="tag-input" placeholder="해시태그 입력 (쉼표로 구분, 예: 반도체,금리) - 제목과 함께 Enter로 생성" style="width:100%; box-sizing:border-box; margin-bottom:10px;">
         <div class="toolbar" id="monkeyLogToolbar" style="margin-bottom: 10px;">
           <button data-cmd="bold" title="굵게"><b>B</b></button>
           <button data-cmd="underline" title="밑줄"><u>U</u></button>
           <span class="toolbar-sep"></span>
           <button class="swatch-btn" data-hl="#ffe680" title="노랑 형광펜" style="background:#ffe680;"></button>
           <button class="swatch-btn" data-hl="#ffc2dd" title="분홍 형광펜" style="background:#ffc2dd;"></button>
+            <button class="swatch-btn" data-hl="#bde3f7" title="하늘색 형광펜" style="background:#bde3f7;"></button>
           <span class="toolbar-sep"></span>
           <button class="swatch-btn text-swatch" data-color="#e0503c" title="빨강 글자" style="color:#e0503c;">A</button>
           <button class="swatch-btn text-swatch" data-color="#3d6fb4" title="파랑 글자" style="color:#3d6fb4;">A</button>
@@ -1260,6 +1276,8 @@
           <button data-cmd="dash" title="대시">&#8211;</button>
           <button data-cmd="number" title="번호리스트">1.</button>
           <button data-cmd="toggle" title="토글 블록">&#9656;</button>
+            <span class="toolbar-sep"></span>
+            <button data-cmd="image" title="사진 첨부">&#128247;</button>
         </div>
         <div class="study-log-filter-row">
           <select id="monkeyLogPeriodFilter">
@@ -1294,6 +1312,7 @@
             <span class="toolbar-sep"></span>
             <button class="swatch-btn" data-hl="#ffe680" title="노랑 형광펜" style="background:#ffe680;"></button>
             <button class="swatch-btn" data-hl="#ffc2dd" title="분홍 형광펜" style="background:#ffc2dd;"></button>
+            <button class="swatch-btn" data-hl="#bde3f7" title="하늘색 형광펜" style="background:#bde3f7;"></button>
             <span class="toolbar-sep"></span>
             <button class="swatch-btn text-swatch" data-color="#e0503c" title="빨강 글자" style="color:#e0503c;">A</button>
             <button class="swatch-btn text-swatch" data-color="#3d6fb4" title="파랑 글자" style="color:#3d6fb4;">A</button>
@@ -1303,6 +1322,8 @@
             <button data-cmd="dash" title="대시">&#8211;</button>
             <button data-cmd="number" title="번호리스트">1.</button>
             <button data-cmd="toggle" title="토글 블록">&#9656;</button>
+            <span class="toolbar-sep"></span>
+            <button data-cmd="image" title="사진 첨부">&#128247;</button>
           </div>
           <div class="diary-editor" id="philEditor" contenteditable="false" data-placeholder="왼쪽에서 폴더와 문서를 만들어 기록을 시작해보세요..."></div>
         </div>
@@ -1330,6 +1351,7 @@
             <span class="toolbar-sep"></span>
             <button class="swatch-btn" data-hl="#ffe680" title="노랑 형광펜" style="background:#ffe680;"></button>
             <button class="swatch-btn" data-hl="#ffc2dd" title="분홍 형광펜" style="background:#ffc2dd;"></button>
+            <button class="swatch-btn" data-hl="#bde3f7" title="하늘색 형광펜" style="background:#bde3f7;"></button>
             <span class="toolbar-sep"></span>
             <button class="swatch-btn text-swatch" data-color="#e0503c" title="빨강 글자" style="color:#e0503c;">A</button>
             <button class="swatch-btn text-swatch" data-color="#3d6fb4" title="파랑 글자" style="color:#3d6fb4;">A</button>
@@ -1339,6 +1361,8 @@
             <button data-cmd="dash" title="대시">&#8211;</button>
             <button data-cmd="number" title="번호리스트">1.</button>
             <button data-cmd="toggle" title="토글 블록">&#9656;</button>
+            <span class="toolbar-sep"></span>
+            <button data-cmd="image" title="사진 첨부">&#128247;</button>
           </div>
           <div class="diary-editor" id="industryEditor" contenteditable="false" data-placeholder="이 문서에 분석을 기록해보세요..."></div>
         </div>
@@ -1459,6 +1483,7 @@
   </div>
 </div>
 
+<input type="file" id="globalImageInput" accept="image/*" style="display:none;">
 <script>
   const root = document.documentElement;
   const themeToggle = document.getElementById('themeToggle');
@@ -2151,14 +2176,24 @@
     sel.addRange(afterRange);
   }
 
+  function insertBulletList() {
+    document.execCommand('insertUnorderedList');
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    let node = sel.getRangeAt(0).startContainer;
+    node = node.nodeType === 3 ? node.parentElement : node;
+    const li = node.closest ? node.closest('li') : null;
+    if (li) li.classList.remove('list-dash');
+  }
+
   function insertDashList() {
     document.execCommand('insertUnorderedList');
     const sel = window.getSelection();
     if (!sel.rangeCount) return;
     let node = sel.getRangeAt(0).startContainer;
     node = node.nodeType === 3 ? node.parentElement : node;
-    const ul = node.closest ? node.closest('ul') : null;
-    if (ul) ul.classList.add('list-dash');
+    const li = node.closest ? node.closest('li') : null;
+    if (li) li.classList.add('list-dash');
   }
 
   function insertToggleBlock() {
@@ -2166,10 +2201,115 @@
     document.execCommand('insertHTML', false, html);
   }
 
+  function placeCaretAtStart(el) {
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    range.collapse(true);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  /* 빈 문단부호에서 Enter: 문단부호 → 들여쓰기 → 서식 없음 순으로 전환 */
+  function handleSmartEnter(e) {
+    if (e.key !== 'Enter' || e.shiftKey) return;
+    const sel = window.getSelection();
+    if (!sel.rangeCount || !sel.isCollapsed) return;
+    let node = sel.getRangeAt(0).startContainer;
+    node = node.nodeType === 3 ? node.parentElement : node;
+    if (!node || !node.closest) return;
+
+    const li = node.closest('li');
+    if (li) {
+      if (li.textContent.trim() !== '') return;
+      e.preventDefault();
+      const ul = li.parentElement;
+      const p = document.createElement('div');
+      p.className = 'indent-line';
+      p.innerHTML = '<br>';
+      li.remove();
+      if (ul && ul.querySelector('li')) {
+        ul.parentNode.insertBefore(p, ul.nextSibling);
+      } else if (ul) {
+        ul.parentNode.insertBefore(p, ul);
+        ul.remove();
+      }
+      placeCaretAtStart(p);
+      return;
+    }
+
+    const indentLine = node.closest('.indent-line');
+    if (indentLine) {
+      if (indentLine.textContent.trim() !== '') return;
+      e.preventDefault();
+      const p = document.createElement('div');
+      p.innerHTML = '<br>';
+      indentLine.parentNode.insertBefore(p, indentLine.nextSibling);
+      indentLine.remove();
+      placeCaretAtStart(p);
+      return;
+    }
+  }
+
+  function attachSmartEnter(editor) {
+    if (!editor) return;
+    editor.addEventListener('keydown', handleSmartEnter);
+  }
+
+  /* ===== 사진 첨부 (서식 툴바 공통) ===== */
+  let imageInsertTargetEditor = null;
+  function resizeImageFile(file, maxDim, quality) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          if (w > maxDim || h > maxDim) {
+            if (w > h) { h = Math.round(h * maxDim / w); w = maxDim; }
+            else { w = Math.round(w * maxDim / h); h = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  function insertImageAtCursor(editor, dataUrl) {
+    if (!editor) return;
+    editor.focus();
+    const html = '<img src="' + dataUrl + '" style="max-width:100%;border-radius:8px;margin:8px 0;display:block;">';
+    document.execCommand('insertHTML', false, html);
+    editor.dispatchEvent(new Event('input'));
+  }
+  function triggerImageInsert(editor) {
+    if (!editor) return;
+    imageInsertTargetEditor = editor;
+    document.getElementById('globalImageInput').click();
+  }
+  document.getElementById('globalImageInput').addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file || !imageInsertTargetEditor) return;
+    try {
+      const dataUrl = await resizeImageFile(file, 900, 0.72);
+      insertImageAtCursor(imageInsertTargetEditor, dataUrl);
+    } catch (err) {}
+  });
+
   function bindRichEditor(toolbarId, editorId) {
     const toolbar = document.getElementById(toolbarId);
     const editor = document.getElementById(editorId);
     if (!toolbar || !editor) return;
+    attachSmartEnter(editor);
 
     toolbar.addEventListener('click', (e) => {
       const swatchHl = e.target.closest('button[data-hl]');
@@ -2184,10 +2324,11 @@
         const cmd = btn.dataset.cmd;
         if (cmd === 'bold') document.execCommand('bold');
         else if (cmd === 'underline') document.execCommand('underline');
-        else if (cmd === 'bullet') document.execCommand('insertUnorderedList');
+        else if (cmd === 'bullet') insertBulletList();
         else if (cmd === 'dash') insertDashList();
         else if (cmd === 'number') document.execCommand('insertOrderedList');
         else if (cmd === 'toggle') insertToggleBlock();
+        else if (cmd === 'image') triggerImageInsert(editor);
       } else {
         return;
       }
@@ -2589,6 +2730,7 @@
   let activeStudyLogEditor = null;
 
   function attachStudyLogEditorBehaviors(editor) {
+    attachSmartEnter(editor);
     editor.addEventListener('focus', () => { activeStudyLogEditor = editor; });
     editor.addEventListener('click', (e) => {
       const caret = e.target.closest('.toggle-caret');
@@ -2633,10 +2775,11 @@
       const cmd = btn.dataset.cmd;
       if (cmd === 'bold') document.execCommand('bold');
       else if (cmd === 'underline') document.execCommand('underline');
-      else if (cmd === 'bullet') document.execCommand('insertUnorderedList');
+      else if (cmd === 'bullet') insertBulletList();
       else if (cmd === 'dash') insertDashList();
       else if (cmd === 'number') document.execCommand('insertOrderedList');
       else if (cmd === 'toggle') insertToggleBlock();
+      else if (cmd === 'image') triggerImageInsert(activeStudyLogEditor);
     } else {
       return;
     }
@@ -2697,6 +2840,7 @@
   let monkeyPeriodFilter = 'all';
   let monkeyTagFilter = null;
   let monkeyLogPage = 1;
+  const monkeyExpandedIds = new Set();
 
   function monkeyItemInPeriod(item) {
     if (monkeyPeriodFilter === 'all') return true;
@@ -2748,6 +2892,7 @@
       if (!monkeyItemInPeriod(item)) return false;
       return true;
     });
+    filtered.sort((a, b) => b.date.localeCompare(a.date));
     list.innerHTML = '';
     if (!filtered.length) {
       list.innerHTML = '<div class="study-log-empty">' + ((q || monkeyTagFilter || monkeyPeriodFilter !== 'all') ? '조건에 맞는 기록이 없습니다.' : '아직 몽키수업 기록이 없습니다.') + '</div>';
@@ -2757,11 +2902,17 @@
     const { pageItems: paginatedLog, page, totalPages } = paginateItems(filtered, monkeyLogPage, PAGE_SIZE);
     monkeyLogPage = page;
     paginatedLog.forEach(item => {
+      const isOpen = monkeyExpandedIds.has(item.id);
       const card = document.createElement('div');
-      card.className = 'study-log-item';
+      card.className = 'study-log-item monkey-log-item' + (isOpen ? ' open' : '');
 
       const header = document.createElement('div');
-      header.className = 'study-log-header';
+      header.className = 'study-log-header monkey-log-header';
+      header.style.cursor = 'pointer';
+      const caret = document.createElement('span');
+      caret.className = 'monkey-log-caret';
+      caret.textContent = '\u25B6';
+      header.appendChild(caret);
       const dateEl = document.createElement('span');
       dateEl.className = 'study-log-date';
       const parts = item.date.split('-');
@@ -2780,8 +2931,18 @@
         saveMonkeyData();
         renderMonkeyLog();
       });
+      del.addEventListener('click', (e) => e.stopPropagation());
       header.appendChild(del);
       card.appendChild(header);
+
+      const previewEl = document.createElement('div');
+      previewEl.className = 'monkey-log-preview';
+      const previewText = stripHtmlPreview(item.content, 60);
+      previewEl.textContent = previewText || '내용 없음';
+      card.appendChild(previewEl);
+
+      const body = document.createElement('div');
+      body.className = 'monkey-log-body';
 
       const editor = document.createElement('div');
       editor.className = 'diary-editor study-log-content';
@@ -2795,7 +2956,7 @@
         editor._saveTimer = setTimeout(saveMonkeyData, 400);
       });
       attachStudyLogEditorBehaviors(editor);
-      card.appendChild(editor);
+      body.appendChild(editor);
 
       const tagSection = document.createElement('div');
       tagSection.className = 'tag-section';
@@ -2834,7 +2995,14 @@
         chips.appendChild(chip);
       });
       tagSection.appendChild(chips);
-      card.appendChild(tagSection);
+      body.appendChild(tagSection);
+      card.appendChild(body);
+
+      header.addEventListener('click', () => {
+        if (monkeyExpandedIds.has(item.id)) monkeyExpandedIds.delete(item.id);
+        else monkeyExpandedIds.add(item.id);
+        card.classList.toggle('open');
+      });
 
       list.appendChild(card);
     });
@@ -2865,27 +3033,44 @@
       const cmd = btn.dataset.cmd;
       if (cmd === 'bold') document.execCommand('bold');
       else if (cmd === 'underline') document.execCommand('underline');
-      else if (cmd === 'bullet') document.execCommand('insertUnorderedList');
+      else if (cmd === 'bullet') insertBulletList();
       else if (cmd === 'dash') insertDashList();
       else if (cmd === 'number') document.execCommand('insertOrderedList');
       else if (cmd === 'toggle') insertToggleBlock();
+      else if (cmd === 'image') triggerImageInsert(activeMonkeyLogEditor);
     } else {
       return;
     }
     activeMonkeyLogEditor.dispatchEvent(new Event('input'));
   });
 
-  document.getElementById('monkeyLogInput').addEventListener('keydown', (e) => {
-    if (e.key !== 'Enter') return;
-    const input = e.target;
-    const title = input.value.trim();
+  document.getElementById('monkeyLogDateInput').value = formatDateKey(new Date());
+
+  function submitMonkeyLogEntry() {
+    const titleInput = document.getElementById('monkeyLogInput');
+    const dateInput = document.getElementById('monkeyLogDateInput');
+    const tagInput = document.getElementById('monkeyLogTagInput');
+    const title = titleInput.value.trim();
     if (!title) return;
+    const dateVal = dateInput.value || formatDateKey(new Date());
+    const tags = tagInput.value.split(/[,\s]+/).map(t => t.trim().replace(/^#/, '')).filter(Boolean);
     if (!Array.isArray(monkeyData.log)) monkeyData.log = [];
-    monkeyData.log.unshift({ id: genId(), title: title, content: '', date: formatDateKey(new Date()), tags: [] });
+    monkeyData.log.unshift({ id: genId(), title: title, content: '', date: dateVal, tags: tags });
     saveMonkeyData();
-    input.value = '';
+    titleInput.value = '';
+    tagInput.value = '';
+    dateInput.value = formatDateKey(new Date());
     monkeyLogPage = 1;
     renderMonkeyLog();
+  }
+
+  document.getElementById('monkeyLogInput').addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    submitMonkeyLogEntry();
+  });
+  document.getElementById('monkeyLogTagInput').addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    submitMonkeyLogEntry();
   });
 
   document.getElementById('monkeySearchInput').addEventListener('input', (e) => {
