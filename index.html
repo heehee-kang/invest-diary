@@ -3812,9 +3812,9 @@
         const labeled = VALUE_CATS.indexOf(ev.cat) !== -1 ? (meta.label + ' ' + display) : display;
         previewParts.push(labeled);
         const hl = EVT_HL_COLOR[ev.cat] || EVT_HL_COLOR.custom;
-        previewHtmlParts.push('<span style="background:' + hl + ';color:#2c2c2a;border-radius:3px;padding:0 2px;">' + escapeHtml(labeled) + '</span>');
+        previewHtmlParts.push('<div style="background:' + hl + ';color:#2c2c2a;border-radius:3px;padding:0 2px;margin-bottom:2px;">' + escapeHtml(labeled) + '</div>');
       });
-      const previewHtml = previewHtmlParts.join(' · ');
+      const previewHtml = previewHtmlParts.join('');
 
       cell.title = previewParts.join(' / ');
 
