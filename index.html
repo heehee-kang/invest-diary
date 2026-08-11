@@ -155,6 +155,7 @@
     min-height: 140px;
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
+    position: relative;
   }
   .home-week-day:hover { background: var(--bg-hover); }
   .home-week-day.today { box-shadow: inset 0 0 0 1px var(--accent); }
@@ -169,6 +170,7 @@
   .home-week-day .wd-top-row { display: flex; align-items: baseline; gap: 5px; }
   .home-week-day .wd-label { font-size: 10px; color: var(--text-muted); }
   .home-week-day .wd-num { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .home-week-day .wd-diary-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
   .home-week-day.sunday .wd-num, .home-week-day.sunday .wd-label { color: #e0503c; }
   .home-week-day.saturday .wd-num, .home-week-day.saturday .wd-label { color: #3d6fb4; }
   .home-week-day .wd-preview {
@@ -780,6 +782,7 @@
   .trade-form-card { margin-top: 16px; }
   .trade-form-title { font-size: 13px; font-weight: 600; margin-bottom: 12px; color: var(--text-secondary); }
   .trade-form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 10px; }
+  .watch-form-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 10px; }
   .trade-form-field-wide { grid-column: 1 / -1; }
   .trade-form-field label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
   .trade-form-field input, .trade-form-field select {
@@ -1462,7 +1465,50 @@
     </div>
     <div id="page-watchlist" class="page-section">
       <div class="page-title">워치리스트</div>
-      <div class="placeholder-box">다음 단계에서 제작 예정</div>
+      <div class="hashtag-search-bar" style="max-width:none;">
+        <input type="text" id="watchSearchInput" placeholder="종목명, 섹터, 메모로 검색" style="max-width:none;">
+      </div>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="doc-header-title" style="margin-bottom:10px;">종목 추가</div>
+        <div class="watch-form-grid">
+          <div class="trade-form-field">
+            <label>종목명</label>
+            <input type="text" id="watchNameInput" placeholder="예: NVDA">
+          </div>
+          <div class="trade-form-field">
+            <label>섹터</label>
+            <input type="text" id="watchSectorInput" placeholder="예: 반도체">
+          </div>
+          <div class="trade-form-field">
+            <label>목표가</label>
+            <input type="text" id="watchTargetInput" placeholder="예: 150">
+          </div>
+          <div class="trade-form-field">
+            <label>메모</label>
+            <input type="text" id="watchMemoInput" placeholder="간단한 메모">
+          </div>
+        </div>
+        <div class="trade-form-actions">
+          <button id="watchAddBtn" class="diary-edit-btn">추가</button>
+        </div>
+      </div>
+      <div class="card trade-table-card">
+        <table class="trade-table">
+          <thead>
+            <tr>
+              <th>종목명</th>
+              <th>섹터</th>
+              <th class="align-right">목표가</th>
+              <th>메모</th>
+              <th>등록일</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="watchTableBody"></tbody>
+        </table>
+        <div class="trade-table-empty" id="watchTableEmpty">등록된 종목이 없습니다.</div>
+        <div class="pagination-controls" id="watchTablePagination"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1708,7 +1754,8 @@
           rDot.style.background = meta.color;
           const rText = document.createElement('span');
           rText.className = 'cal-day-event-text';
-          rText.textContent = formatEventDisplay(ev);
+          const rDisplay = formatEventDisplay(ev);
+          rText.textContent = VALUE_CATS.indexOf(ev.cat) !== -1 ? (meta.label + ' ' + rDisplay) : rDisplay;
           row.appendChild(rDot);
           row.appendChild(rText);
           list.appendChild(row);
@@ -3765,6 +3812,121 @@
 
   renderTradeTable();
 
+  /* ===== 워치리스트 ===== */
+  const WATCH_KEY = 'invest-journal-watchlist';
+  let watchList;
+  try { watchList = JSON.parse(localStorage.getItem(WATCH_KEY) || '[]'); } catch (e) { watchList = []; }
+  if (!Array.isArray(watchList)) watchList = [];
+  function saveWatchList() { localStorage.setItem(WATCH_KEY, JSON.stringify(watchList)); }
+  let watchSearchQuery = '';
+  let watchPage = 1;
+
+  function renderWatchTable() {
+    const tbody = document.getElementById('watchTableBody');
+    const emptyEl = document.getElementById('watchTableEmpty');
+    const paginationEl = document.getElementById('watchTablePagination');
+    const q = watchSearchQuery.trim().toLowerCase();
+    const filtered = watchList.filter(w => !q || (w.name || '').toLowerCase().includes(q) || (w.sector || '').toLowerCase().includes(q) || (w.memo || '').toLowerCase().includes(q));
+    tbody.innerHTML = '';
+    if (!filtered.length) {
+      emptyEl.style.display = 'block';
+      emptyEl.textContent = q ? '검색 결과가 없습니다.' : '등록된 종목이 없습니다.';
+      paginationEl.innerHTML = '';
+      return;
+    }
+    emptyEl.style.display = 'none';
+    const { pageItems, page, totalPages } = paginateItems(filtered, watchPage, PAGE_SIZE);
+    watchPage = page;
+
+    function makeEditableCell(item, field) {
+      const td = document.createElement('td');
+      const span = document.createElement('span');
+      span.textContent = item[field] || '';
+      span.style.cursor = 'pointer';
+      span.title = '클릭해서 수정';
+      span.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = item[field] || '';
+        input.style.cssText = 'width:100%;box-sizing:border-box;border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:13px;background:var(--bg-page);color:var(--text-primary);';
+        td.innerHTML = '';
+        td.appendChild(input);
+        input.focus();
+        input.select();
+        const commit = () => {
+          item[field] = input.value.trim();
+          saveWatchList();
+          renderWatchTable();
+        };
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+          if (e.key === 'Escape') { e.preventDefault(); renderWatchTable(); }
+        });
+        input.addEventListener('blur', commit);
+      });
+      td.appendChild(span);
+      return td;
+    }
+
+    pageItems.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.appendChild(makeEditableCell(item, 'name'));
+      tr.appendChild(makeEditableCell(item, 'sector'));
+      const targetTd = makeEditableCell(item, 'target');
+      targetTd.classList.add('align-right');
+      tr.appendChild(targetTd);
+      tr.appendChild(makeEditableCell(item, 'memo'));
+
+      const dateTd = document.createElement('td');
+      dateTd.textContent = item.date || '';
+      tr.appendChild(dateTd);
+
+      const delTd = document.createElement('td');
+      const delBtn = document.createElement('button');
+      delBtn.className = 'study-log-del';
+      delBtn.textContent = '\u00d7';
+      attachConfirmDelete(delBtn, () => {
+        watchList = watchList.filter(w => w.id !== item.id);
+        saveWatchList();
+        renderWatchTable();
+      });
+      delTd.appendChild(delBtn);
+      tr.appendChild(delTd);
+
+      tbody.appendChild(tr);
+    });
+
+    renderPagination(paginationEl, page, totalPages, (newPage) => {
+      watchPage = newPage;
+      renderWatchTable();
+    });
+  }
+
+  document.getElementById('watchAddBtn').addEventListener('click', () => {
+    const nameInput = document.getElementById('watchNameInput');
+    const sectorInput = document.getElementById('watchSectorInput');
+    const targetInput = document.getElementById('watchTargetInput');
+    const memoInput = document.getElementById('watchMemoInput');
+    const name = nameInput.value.trim();
+    if (!name) return;
+    watchList.unshift({ id: genId(), name: name, sector: sectorInput.value.trim(), target: targetInput.value.trim(), memo: memoInput.value.trim(), date: formatDateKey(new Date()) });
+    saveWatchList();
+    nameInput.value = '';
+    sectorInput.value = '';
+    targetInput.value = '';
+    memoInput.value = '';
+    watchPage = 1;
+    renderWatchTable();
+  });
+
+  document.getElementById('watchSearchInput').addEventListener('input', (e) => {
+    watchSearchQuery = e.target.value;
+    watchPage = 1;
+    renderWatchTable();
+  });
+
+  renderWatchTable();
+
   let homeWeekOffset = 0;
 
   function getWeekStart(offsetWeeks) {
@@ -3802,6 +3964,8 @@
       if (key === todayKey) cell.classList.add('today');
       const dayEvents = calendarEvents[key] || [];
       const hasEvents = dayEvents.length > 0;
+      const diaryEntry = diaryData[key];
+      const hasDiary = !!(diaryEntry && (diaryEntry.summary || diaryEntry.aiSummary || (diaryEntry.content && diaryEntry.content.trim())));
       const EVT_HL_COLOR = { earnings: '#e4d8fb', disclosure: '#fbe0c2', holiday: '#d3e2f5', fear: '#fbd5d5', vix: '#c9ecdc', tenyr: '#c8ecf3', custom: '#e2e2e0' };
 
       let previewParts = [];
@@ -3819,6 +3983,7 @@
       cell.title = previewParts.join(' / ');
 
       cell.innerHTML =
+        (hasDiary ? '<span class="wd-diary-dot" title="일기 작성됨"></span>' : '') +
         '<div class="wd-top-row"><span class="wd-label">' + weekdayLabels[i] + '</span><span class="wd-num">' + d.getDate() + '</span></div>' +
         '<span class="wd-preview">' + previewHtml + '</span>' +
         (hasEvents ? '<span class="wd-dot"></span>' : '');
