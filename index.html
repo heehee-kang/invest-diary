@@ -280,7 +280,7 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
-    min-height: 78px;
+    min-height: 118px;
     border-right: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
     font-size: 12px;
@@ -1096,7 +1096,7 @@
           <div class="card-empty">아직 작성된 내용이 없습니다.</div>
         </div>
         <div class="card" id="homeStudyCheckCard">
-          <div class="card-heading">&#9989; 챙겨야 할 것</div>
+          <div class="card-heading">&#9989; 오늘 시황</div>
           <div class="card-empty">아직 작성된 내용이 없습니다.</div>
         </div>
       </div>
@@ -1196,10 +1196,10 @@
         </div>
         <div class="card study-box">
           <div class="doc-header">
-            <div class="doc-header-title">챙겨야 할 것</div>
+            <div class="doc-header-title">오늘 시황</div>
           </div>
           <div class="study-todo-add">
-            <input type="text" id="studyCheckInput" placeholder="챙겨야 할 내용을 입력하고 Enter">
+            <input type="text" id="studyCheckInput" placeholder="오늘 시황을 입력하고 Enter">
           </div>
           <div class="study-todo-list" id="studyCheckList"></div>
         </div>
@@ -1255,7 +1255,7 @@
         <div class="study-log-source-tabs" id="studyLogSourceTabs">
           <button type="button" class="source-tab active" data-source="all">전체</button>
           <button type="button" class="source-tab" data-source="todo">오늘 공부할 것</button>
-          <button type="button" class="source-tab" data-source="check">챙겨야 할 것</button>
+          <button type="button" class="source-tab" data-source="check">오늘 시황</button>
         </div>
         <div class="study-log-list" id="studyLogList"></div>
         <div class="pagination-controls" id="studyLogPagination"></div>
@@ -1741,11 +1741,14 @@
       topRow.appendChild(iconsWrap);
       div.appendChild(topRow);
 
-      const dayEvents = calendarEvents[key] || [];
+      const dayEvents = (calendarEvents[key] || []).slice().sort((a, b) => {
+        const order = { earnings: 0, disclosure: 0, holiday: 0, custom: 0, fear: 1, vix: 1, tenyr: 1 };
+        return (order[a.cat] || 0) - (order[b.cat] || 0);
+      });
       if (dayEvents.length) {
         const list = document.createElement('div');
         list.className = 'cal-day-events-list';
-        dayEvents.slice(0, 2).forEach(ev => {
+        dayEvents.slice(0, 4).forEach(ev => {
           const meta = getCatMeta(ev);
           const row = document.createElement('div');
           row.className = 'cal-day-event-row';
@@ -1760,10 +1763,10 @@
           row.appendChild(rText);
           list.appendChild(row);
         });
-        if (dayEvents.length > 2) {
+        if (dayEvents.length > 4) {
           const more = document.createElement('div');
           more.className = 'cal-day-event-more';
-          more.textContent = '+' + (dayEvents.length - 2) + '건 더';
+          more.textContent = '+' + (dayEvents.length - 4) + '건 더';
           list.appendChild(more);
         }
         div.appendChild(list);
@@ -2458,7 +2461,7 @@
 
   bindRichEditor('diaryToolbar', 'diaryEditor');
 
-  /* ===== 공부 (오늘 공부할 것 체크리스트 / 챙겨야 할 것 / 주의 / 공부 기록) ===== */
+  /* ===== 공부 (오늘 공부할 것 체크리스트 / 오늘 시황 / 주의 / 공부 기록) ===== */
   const STUDY_KEY = 'invest-journal-study';
   let studyData;
   try { studyData = JSON.parse(localStorage.getItem(STUDY_KEY) || '{}'); } catch (e) { studyData = {}; }
@@ -2592,7 +2595,7 @@
 
   renderRiskItems();
 
-  const STUDY_SOURCE_LABEL = { todo: '오늘 공부할 것', check: '챙겨야 할 것' };
+  const STUDY_SOURCE_LABEL = { todo: '오늘 공부할 것', check: '오늘 시황' };
 
   function logStudyItem(text, source) {
     if (!Array.isArray(studyData.log)) studyData.log = [];
@@ -4050,10 +4053,10 @@
     const checkCardEl = document.getElementById('homeStudyCheckCard');
     const checkTodos = (typeof studyData !== 'undefined' && Array.isArray(studyData.checkTodos)) ? studyData.checkTodos : [];
     if (checkTodos.length) {
-      checkCardEl.innerHTML = '<div class="card-heading">&#9989; 챙겨야 할 것</div>' +
+      checkCardEl.innerHTML = '<div class="card-heading">&#9989; 오늘 시황</div>' +
         checkTodos.map(t => '<div class="home-item-row"><span>' + escapeHtml(t.text) + '</span></div>').join('');
     } else {
-      checkCardEl.innerHTML = '<div class="card-heading">&#9989; 챙겨야 할 것</div><div class="card-empty">아직 추가된 항목이 없습니다.</div>';
+      checkCardEl.innerHTML = '<div class="card-heading">&#9989; 오늘 시황</div><div class="card-empty">아직 추가된 항목이 없습니다.</div>';
     }
 
     const riskCardEl = document.getElementById('homeStudyCautionCard');
