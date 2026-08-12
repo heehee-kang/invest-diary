@@ -150,6 +150,15 @@
   .home-report-line + .home-report-line { margin-top: 2px; }
   .home-report-line.risk { color: #dc2626; }
   .home-report-empty { font-size: 13px; color: var(--text-muted); }
+  .weekly-ai-box { background: var(--bg-accent); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+  .weekly-ai-box-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .weekly-ai-box-title { font-size: 11px; font-weight: 700; color: var(--text-accent); letter-spacing: 0.03em; }
+  .weekly-ai-btn { border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); border-radius: 7px; padding: 4px 10px; font-size: 11px; cursor: pointer; }
+  .weekly-ai-btn:hover { background: var(--bg-hover); }
+  .weekly-ai-btn:disabled { opacity: 0.6; cursor: default; }
+  .weekly-ai-summary-text { font-size: 13px; line-height: 1.7; color: var(--text-primary); white-space: pre-wrap; }
+  .weekly-ai-status { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .home-report-line .wd-day-prefix { color: var(--text-muted); margin-right: 4px; }
   .home-week-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -1070,6 +1079,7 @@
   <div class="sidebar">
     <div class="sidebar-title">MY INVEST LOG</div>
     <div class="menu-item active" data-page="home"><span class="menu-icon">&#9679;</span>홈</div>
+    <div class="menu-item" data-page="weekly"><span class="menu-icon">&#128197;</span>주간</div>
     <div class="menu-item" data-page="calendar"><span class="menu-icon">&#128197;</span>캘린더+일기</div>
     <div class="menu-item" data-page="study"><span class="menu-icon">&#128218;</span>공부</div>
     <div class="menu-item" data-page="monkey"><span class="menu-icon">&#128018;</span>몽키수업</div>
@@ -1108,6 +1118,29 @@
         </div>
         <div class="home-report-rule"></div>
         <div id="homeReportBody"></div>
+      </div>
+    </div>
+
+    <div id="page-weekly" class="page-section">
+      <div class="page-title">주간</div>
+      <div class="card home-report-card">
+        <div class="home-report-header">
+          <button class="cal-nav" id="weeklyReportPrev">&#8249;</button>
+          <div class="home-report-date-wrap">
+            <span class="home-report-date-label" id="weeklyReportLabel"></span>
+          </div>
+          <button class="cal-nav" id="weeklyReportNext">&#8250;</button>
+        </div>
+        <div class="home-report-rule"></div>
+        <div class="weekly-ai-box">
+          <div class="weekly-ai-box-header">
+            <span class="weekly-ai-box-title">&#10024; AI 주간 요약</span>
+            <button id="weeklyAiBtn" class="weekly-ai-btn">요약 생성</button>
+          </div>
+          <div id="weeklyAiSummary" class="weekly-ai-summary-text"></div>
+          <div id="weeklyAiStatus" class="weekly-ai-status"></div>
+        </div>
+        <div id="weeklyReportBody"></div>
       </div>
     </div>
 
@@ -1841,7 +1874,7 @@
     status.textContent = (entry && entry.aiSummary) ? ('요약: ' + entry.aiSummary) : '';
   }
 
-  function callAiSummaryJsonp(text) {
+  function callAiSummaryJsonp(text, mode) {
     return new Promise((resolve, reject) => {
       const callbackName = 'aiSummaryCb_' + Date.now();
       let timeoutId;
@@ -1855,7 +1888,7 @@
         resolve(data);
       };
       const scriptEl = document.createElement('script');
-      scriptEl.src = AI_PROXY_URL + '?text=' + encodeURIComponent(text) + '&callback=' + callbackName;
+      scriptEl.src = AI_PROXY_URL + '?text=' + encodeURIComponent(text) + (mode ? '&mode=' + encodeURIComponent(mode) : '') + '&callback=' + callbackName;
       scriptEl.onerror = () => {
         cleanup(scriptEl);
         reject(new Error('jsonp load error'));
@@ -4169,6 +4202,147 @@
     renderHomeTodayDate();
     renderHomeWeek();
   }
+
+  /* ===== 주간 리포트 ===== */
+  const WEEKLY_AI_KEY = 'invest-journal-weekly-ai';
+  let weeklyAiData;
+  try { weeklyAiData = JSON.parse(localStorage.getItem(WEEKLY_AI_KEY) || '{}'); } catch (e) { weeklyAiData = {}; }
+  if (!weeklyAiData || typeof weeklyAiData !== 'object') weeklyAiData = {};
+  function saveWeeklyAiData() { localStorage.setItem(WEEKLY_AI_KEY, JSON.stringify(weeklyAiData)); }
+
+  let weeklyReportOffset = 0;
+  const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
+
+  function getWeekDateKeys(offsetWeeks) {
+    const start = getWeekStart(offsetWeeks);
+    const keys = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+      keys.push(formatDateKey(d));
+    }
+    return keys;
+  }
+
+  function buildWeeklySections(weekKeys) {
+    const marketLines = [];
+    const diaryLines = [];
+    const studyLines = [];
+    const checkLines = [];
+    const monkeyLines = [];
+    const riskLines = [];
+
+    weekKeys.forEach((dateKey, i) => {
+      const wd = WEEKDAY_LABELS[i];
+      const dayEvents = calendarEvents[dateKey] || [];
+      dayEvents.forEach(ev => {
+        const meta = getCatMeta(ev);
+        const display = formatEventDisplay(ev);
+        const text = VALUE_CATS.indexOf(ev.cat) !== -1 ? (meta.label + ' ' + display) : (meta.label + ' · ' + display);
+        marketLines.push({ wd: wd, text: text });
+      });
+
+      const diaryEntry = diaryData[dateKey];
+      if (diaryEntry) {
+        const t = diaryEntry.aiSummary ? ('\u2728 ' + diaryEntry.aiSummary) : (diaryEntry.summary || '');
+        if (t) diaryLines.push({ wd: wd, text: t });
+      }
+
+      const studyLog = (typeof studyData !== 'undefined' && Array.isArray(studyData.log)) ? studyData.log : [];
+      studyLog.filter(e => e.date === dateKey && e.source === 'todo').forEach(e => studyLines.push({ wd: wd, text: e.title || '' }));
+      studyLog.filter(e => e.date === dateKey && e.source === 'check').forEach(e => checkLines.push({ wd: wd, text: e.title || '' }));
+
+      const monkeyLog = (typeof monkeyData !== 'undefined' && Array.isArray(monkeyData.log)) ? monkeyData.log : [];
+      monkeyLog.filter(e => e.date === dateKey).forEach(e => monkeyLines.push({ wd: wd, text: e.title || '' }));
+
+      const riskItemsAll = (typeof studyData !== 'undefined' && Array.isArray(studyData.riskItems)) ? studyData.riskItems : [];
+      riskItemsAll.filter(r => r.level === 'high' && formatDateKey(new Date(r.ts)) === dateKey).forEach(r => riskLines.push({ wd: wd, text: '\ud83d\udd34 ' + r.text }));
+    });
+
+    return [
+      { label: 'MARKET', items: marketLines },
+      { label: 'DIARY', items: diaryLines },
+      { label: 'STUDY', items: studyLines },
+      { label: '오늘 시황', items: checkLines },
+      { label: 'MONKEY CLASS', items: monkeyLines },
+      { label: 'RISK', items: riskLines, isRisk: true }
+    ];
+  }
+
+  function renderWeeklyReport() {
+    const weekKeys = getWeekDateKeys(weeklyReportOffset);
+    const start = getWeekStart(weeklyReportOffset);
+    const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6);
+    const fmt = (d) => (d.getMonth() + 1) + '.' + d.getDate();
+    document.getElementById('weeklyReportLabel').textContent = start.getFullYear() + '년 ' + fmt(start) + ' - ' + fmt(end);
+
+    const weekKey = weekKeys[0];
+    const summary = weeklyAiData[weekKey];
+    const summaryEl = document.getElementById('weeklyAiSummary');
+    const btn = document.getElementById('weeklyAiBtn');
+    if (summary) {
+      summaryEl.textContent = summary;
+      btn.textContent = '다시 생성';
+    } else {
+      summaryEl.textContent = '아직 이번 주 요약이 없습니다.';
+      btn.textContent = '요약 생성';
+    }
+    document.getElementById('weeklyAiStatus').textContent = '';
+
+    const sections = buildWeeklySections(weekKeys);
+    const body = document.getElementById('weeklyReportBody');
+    body.innerHTML = sections.map(sec => {
+      const labelClass = sec.isRisk ? 'home-report-section-label risk' : 'home-report-section-label';
+      const content = sec.items.length
+        ? sec.items.map(it => '<div class="home-report-line' + (sec.isRisk ? ' risk' : '') + '"><span class="wd-day-prefix">' + it.wd + '</span>' + escapeHtml(it.text) + '</div>').join('')
+        : '<div class="home-report-empty">기록 없음</div>';
+      return '<div class="home-report-section"><div class="' + labelClass + '">' + sec.label + '</div>' + content + '</div>';
+    }).join('');
+  }
+
+  document.getElementById('weeklyReportPrev').addEventListener('click', () => {
+    weeklyReportOffset--;
+    renderWeeklyReport();
+  });
+  document.getElementById('weeklyReportNext').addEventListener('click', () => {
+    weeklyReportOffset++;
+    renderWeeklyReport();
+  });
+
+  document.getElementById('weeklyAiBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('weeklyAiBtn');
+    const status = document.getElementById('weeklyAiStatus');
+    const weekKeys = getWeekDateKeys(weeklyReportOffset);
+    const weekKey = weekKeys[0];
+    const sections = buildWeeklySections(weekKeys);
+    const rawParts = [];
+    sections.forEach(sec => {
+      if (!sec.items.length) return;
+      rawParts.push(sec.label + ': ' + sec.items.map(it => it.wd + ' ' + it.text).join(' / '));
+    });
+    const rawText = rawParts.join('\n');
+    if (!rawText.trim()) {
+      status.textContent = '이번 주에 작성된 기록이 없습니다.';
+      return;
+    }
+    btn.disabled = true;
+    status.textContent = '요약 생성 중...';
+    try {
+      const data = await callAiSummaryJsonp(rawText, 'weekly');
+      if (data && data.summary) {
+        weeklyAiData[weekKey] = data.summary;
+        saveWeeklyAiData();
+        renderWeeklyReport();
+      } else {
+        status.textContent = '요약 생성에 실패했습니다.';
+      }
+    } catch (err) {
+      status.textContent = '요약 생성 중 오류가 발생했습니다.';
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  renderWeeklyReport();
 
   renderHomeDashboard();
 </script>
