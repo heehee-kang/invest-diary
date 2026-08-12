@@ -156,8 +156,12 @@
   .weekly-ai-btn { border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); border-radius: 7px; padding: 4px 10px; font-size: 11px; cursor: pointer; }
   .weekly-ai-btn:hover { background: var(--bg-hover); }
   .weekly-ai-btn:disabled { opacity: 0.6; cursor: default; }
-  .weekly-ai-summary-text { font-size: 13px; line-height: 1.7; color: var(--text-primary); white-space: pre-wrap; }
+  .weekly-ai-summary-text { font-size: 13px; line-height: 1.7; color: var(--text-primary); white-space: pre-wrap; cursor: pointer; border-radius: 6px; padding: 2px 4px; margin: -2px -4px; }
+  .weekly-ai-summary-text.is-empty { color: var(--text-muted); }
+  .weekly-ai-summary-text:hover { background: var(--bg-hover); }
+  .weekly-ai-summary-text.editing { cursor: text; background: var(--bg-page); outline: 1px solid var(--border); }
   .weekly-ai-status { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .weekly-memo-input { width: 100%; box-sizing: border-box; margin-top: 8px; border: 1px dashed var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; color: var(--text-secondary); background: var(--bg-page); resize: vertical; min-height: 32px; font-family: inherit; }
   .home-report-line .wd-day-prefix { color: var(--text-muted); margin-right: 4px; }
   .home-week-grid {
     display: grid;
@@ -4210,6 +4214,12 @@
   if (!weeklyAiData || typeof weeklyAiData !== 'object') weeklyAiData = {};
   function saveWeeklyAiData() { localStorage.setItem(WEEKLY_AI_KEY, JSON.stringify(weeklyAiData)); }
 
+  const WEEKLY_MEMO_KEY = 'invest-journal-weekly-memo';
+  let weeklyMemoData;
+  try { weeklyMemoData = JSON.parse(localStorage.getItem(WEEKLY_MEMO_KEY) || '{}'); } catch (e) { weeklyMemoData = {}; }
+  if (!weeklyMemoData || typeof weeklyMemoData !== 'object') weeklyMemoData = {};
+  function saveWeeklyMemoData() { localStorage.setItem(WEEKLY_MEMO_KEY, JSON.stringify(weeklyMemoData)); }
+
   let weeklyReportOffset = 0;
   const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -4221,6 +4231,10 @@
       keys.push(formatDateKey(d));
     }
     return keys;
+  }
+
+  function tagSuffix(tags) {
+    return (tags && tags.length) ? (' ' + tags.map(t => '#' + t).join(' ')) : '';
   }
 
   function buildWeeklySections(weekKeys) {
@@ -4244,27 +4258,27 @@
       const diaryEntry = diaryData[dateKey];
       if (diaryEntry) {
         const t = diaryEntry.aiSummary ? ('\u2728 ' + diaryEntry.aiSummary) : (diaryEntry.summary || '');
-        if (t) diaryLines.push({ wd: wd, text: t });
+        if (t) diaryLines.push({ wd: wd, text: t + tagSuffix(diaryEntry.tags) });
       }
 
       const studyLog = (typeof studyData !== 'undefined' && Array.isArray(studyData.log)) ? studyData.log : [];
-      studyLog.filter(e => e.date === dateKey && e.source === 'todo').forEach(e => studyLines.push({ wd: wd, text: e.title || '' }));
-      studyLog.filter(e => e.date === dateKey && e.source === 'check').forEach(e => checkLines.push({ wd: wd, text: e.title || '' }));
+      studyLog.filter(e => e.date === dateKey && e.source === 'todo').forEach(e => studyLines.push({ wd: wd, text: (e.title || '') + tagSuffix(e.tags) }));
+      studyLog.filter(e => e.date === dateKey && e.source === 'check').forEach(e => checkLines.push({ wd: wd, text: (e.title || '') + tagSuffix(e.tags) }));
 
       const monkeyLog = (typeof monkeyData !== 'undefined' && Array.isArray(monkeyData.log)) ? monkeyData.log : [];
-      monkeyLog.filter(e => e.date === dateKey).forEach(e => monkeyLines.push({ wd: wd, text: e.title || '' }));
+      monkeyLog.filter(e => e.date === dateKey).forEach(e => monkeyLines.push({ wd: wd, text: (e.title || '') + tagSuffix(e.tags) }));
 
       const riskItemsAll = (typeof studyData !== 'undefined' && Array.isArray(studyData.riskItems)) ? studyData.riskItems : [];
       riskItemsAll.filter(r => r.level === 'high' && formatDateKey(new Date(r.ts)) === dateKey).forEach(r => riskLines.push({ wd: wd, text: '\ud83d\udd34 ' + r.text }));
     });
 
     return [
-      { label: 'MARKET', items: marketLines },
-      { label: 'DIARY', items: diaryLines },
-      { label: 'STUDY', items: studyLines },
-      { label: '오늘 시황', items: checkLines },
-      { label: 'MONKEY CLASS', items: monkeyLines },
-      { label: 'RISK', items: riskLines, isRisk: true }
+      { key: 'MARKET', label: 'MARKET', items: marketLines },
+      { key: 'DIARY', label: 'DIARY', items: diaryLines },
+      { key: 'STUDY', label: 'STUDY', items: studyLines },
+      { key: 'CHECK', label: '오늘 시황', items: checkLines },
+      { key: 'MONKEY', label: 'MONKEY CLASS', items: monkeyLines },
+      { key: 'RISK', label: 'RISK', items: riskLines, isRisk: true }
     ];
   }
 
@@ -4279,15 +4293,12 @@
     const summary = weeklyAiData[weekKey];
     const summaryEl = document.getElementById('weeklyAiSummary');
     const btn = document.getElementById('weeklyAiBtn');
-    if (summary) {
-      summaryEl.textContent = summary;
-      btn.textContent = '다시 생성';
-    } else {
-      summaryEl.textContent = '아직 이번 주 요약이 없습니다.';
-      btn.textContent = '요약 생성';
-    }
+    summaryEl.classList.toggle('is-empty', !summary);
+    summaryEl.textContent = summary || '아직 이번 주 요약이 없습니다. (요약 생성 후에는 클릭해서 직접 고칠 수도 있어요)';
+    btn.textContent = summary ? '다시 생성' : '요약 생성';
     document.getElementById('weeklyAiStatus').textContent = '';
 
+    const memoForWeek = weeklyMemoData[weekKey] || {};
     const sections = buildWeeklySections(weekKeys);
     const body = document.getElementById('weeklyReportBody');
     body.innerHTML = sections.map(sec => {
@@ -4295,9 +4306,40 @@
       const content = sec.items.length
         ? sec.items.map(it => '<div class="home-report-line' + (sec.isRisk ? ' risk' : '') + '"><span class="wd-day-prefix">' + it.wd + '</span>' + escapeHtml(it.text) + '</div>').join('')
         : '<div class="home-report-empty">기록 없음</div>';
-      return '<div class="home-report-section"><div class="' + labelClass + '">' + sec.label + '</div>' + content + '</div>';
+      const memoText = memoForWeek[sec.key] || '';
+      const memoHtml = '<textarea class="weekly-memo-input" data-sec="' + sec.key + '" placeholder="이 항목에 메모 추가...">' + escapeHtml(memoText) + '</textarea>';
+      return '<div class="home-report-section"><div class="' + labelClass + '">' + sec.label + '</div>' + content + memoHtml + '</div>';
     }).join('');
+
+    body.querySelectorAll('.weekly-memo-input').forEach(ta => {
+      ta.addEventListener('blur', () => {
+        if (!weeklyMemoData[weekKey]) weeklyMemoData[weekKey] = {};
+        weeklyMemoData[weekKey][ta.dataset.sec] = ta.value;
+        saveWeeklyMemoData();
+      });
+    });
   }
+
+  document.getElementById('weeklyAiSummary').addEventListener('click', function () {
+    if (this.isContentEditable) return;
+    this.contentEditable = 'true';
+    this.classList.add('editing');
+    this.focus();
+    document.execCommand('selectAll');
+  });
+  document.getElementById('weeklyAiSummary').addEventListener('blur', function () {
+    if (!this.isContentEditable) return;
+    this.contentEditable = 'false';
+    this.classList.remove('editing');
+    const weekKeys = getWeekDateKeys(weeklyReportOffset);
+    const weekKey = weekKeys[0];
+    const val = this.textContent.trim();
+    const placeholder = '아직 이번 주 요약이 없습니다. (요약 생성 후에는 클릭해서 직접 고칠 수도 있어요)';
+    if (val && val !== placeholder) weeklyAiData[weekKey] = val;
+    else delete weeklyAiData[weekKey];
+    saveWeeklyAiData();
+    renderWeeklyReport();
+  });
 
   document.getElementById('weeklyReportPrev').addEventListener('click', () => {
     weeklyReportOffset--;
