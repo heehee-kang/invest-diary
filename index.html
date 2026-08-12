@@ -2640,6 +2640,59 @@
     });
   }
 
+  function renderPlainList(dataKey, listId, source) {
+    const list = document.getElementById(listId);
+    const items = studyData[dataKey] || [];
+    list.innerHTML = '';
+    if (!items.length) {
+      list.innerHTML = '<div class="study-todo-empty">아직 추가된 항목이 없습니다.</div>';
+      return;
+    }
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'study-todo-item';
+      const text = document.createElement('span');
+      text.className = 'study-todo-text';
+      text.textContent = item.text;
+      text.style.cursor = 'pointer';
+      text.title = '클릭해서 수정';
+      text.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = item.text;
+        input.style.cssText = 'flex:1;border:1px solid var(--border);border-radius:7px;padding:5px 8px;font-size:13px;background:var(--bg-page);color:var(--text-primary);';
+        row.replaceChild(input, text);
+        input.focus();
+        input.select();
+        const commit = () => {
+          const newText = input.value.trim();
+          if (newText) {
+            item.text = newText;
+            saveStudyData();
+          }
+          renderPlainList(dataKey, listId, source);
+        };
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+          if (e.key === 'Escape') { e.preventDefault(); renderPlainList(dataKey, listId, source); }
+        });
+        input.addEventListener('blur', commit);
+      });
+      row.appendChild(text);
+      const del = document.createElement('button');
+      del.className = 'study-todo-del';
+      del.title = '삭제';
+      del.textContent = '\u00d7';
+      attachConfirmDelete(del, () => {
+        studyData[dataKey] = (studyData[dataKey] || []).filter(t => t.id !== item.id);
+        saveStudyData();
+        renderPlainList(dataKey, listId, source);
+      });
+      row.appendChild(del);
+      list.appendChild(row);
+    });
+  }
+
   function addChecklistItem(dataKey, listId, inputId, source) {
     const input = document.getElementById(inputId);
     const text = input.value.trim();
@@ -2649,13 +2702,14 @@
     logStudyItem(text, source);
     saveStudyData();
     input.value = '';
-    renderChecklist(dataKey, listId, source);
+    if (source === 'check') renderStudyCheckTodos();
+    else renderChecklist(dataKey, listId, source);
     if (typeof renderStudyLog === 'function') renderStudyLog();
     if (typeof renderHomeDashboard === 'function') renderHomeDashboard();
   }
 
   function renderStudyTodos() { renderChecklist('todos', 'studyTodoList', 'todo'); }
-  function renderStudyCheckTodos() { renderChecklist('checkTodos', 'studyCheckList', 'check'); }
+  function renderStudyCheckTodos() { renderPlainList('checkTodos', 'studyCheckList', 'check'); }
 
   let studySearchQuery = '';
   let studyPeriodFilter = 'all';
