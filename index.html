@@ -135,6 +135,21 @@
   .home-header-row { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
   .home-today-date { font-size: 13px; color: var(--text-secondary); }
   .home-week-card { padding: 16px; }
+  .home-report-card { padding: 20px 24px; margin-top: 14px; }
+  .home-report-header { display: flex; align-items: center; justify-content: center; gap: 14px; }
+  .home-report-date-wrap { position: relative; display: flex; align-items: center; gap: 6px; }
+  .home-report-date-label { font-size: 17px; font-weight: 700; color: var(--text-primary); }
+  .home-report-date-btn { background: none; border: none; cursor: pointer; font-size: 14px; color: var(--text-muted); padding: 2px; }
+  .home-report-date-input { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+  .home-report-rule { border-top: 2px solid var(--text-primary); margin: 14px 0 4px; }
+  .home-report-section { padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .home-report-section:last-child { border-bottom: none; }
+  .home-report-section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--text-accent); margin: 0 0 6px; text-transform: uppercase; }
+  .home-report-section-label.risk { color: #dc2626; }
+  .home-report-line { font-size: 13px; line-height: 1.7; color: var(--text-primary); }
+  .home-report-line + .home-report-line { margin-top: 2px; }
+  .home-report-line.risk { color: #dc2626; }
+  .home-report-empty { font-size: 13px; color: var(--text-muted); }
   .home-week-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -159,6 +174,7 @@
   }
   .home-week-day:hover { background: var(--bg-hover); }
   .home-week-day.today { box-shadow: inset 0 0 0 1px var(--accent); }
+  .home-week-day.selected { background: var(--bg-active); }
   .home-week-day.sunday { background: #fbe4e0; }
   .home-week-day.saturday { background: #e3ecf7; }
   .home-week-day.sunday:hover { background: #f6d4ce; }
@@ -1080,31 +1096,18 @@
         <div class="home-week-grid" id="homeWeekGrid"></div>
       </div>
 
-      <div class="card-grid-2">
-        <div class="card" id="homeDiaryCard">
-          <div class="card-heading">&#128221; 오늘의 일기</div>
-          <div class="card-empty">아직 작성된 기록이 없습니다.</div>
+      <div class="card home-report-card">
+        <div class="home-report-header">
+          <button class="cal-nav" id="homeReportPrev">&#8249;</button>
+          <div class="home-report-date-wrap">
+            <span class="home-report-date-label" id="homeReportDateLabel"></span>
+            <button class="home-report-date-btn" id="homeReportDateBtn" title="날짜 선택">&#128197;</button>
+            <input type="date" id="homeReportDateInput" class="home-report-date-input">
+          </div>
+          <button class="cal-nav" id="homeReportNext">&#8250;</button>
         </div>
-        <div class="card" id="homeCalendarCard">
-          <div class="card-heading">&#128197; 오늘의 캘린더 이슈</div>
-          <div class="card-empty">등록된 이슈가 없습니다.</div>
-        </div>
-      </div>
-      <div class="card-grid-2" style="margin-top:14px;">
-        <div class="card" id="homeStudyTodayCard">
-          <div class="card-heading">&#128218; 오늘 공부할 것</div>
-          <div class="card-empty">아직 작성된 내용이 없습니다.</div>
-        </div>
-        <div class="card" id="homeStudyCheckCard">
-          <div class="card-heading">&#9989; 오늘 시황</div>
-          <div class="card-empty">아직 작성된 내용이 없습니다.</div>
-        </div>
-      </div>
-      <div class="card-grid-2" style="margin-top:14px;">
-        <div class="card" id="homeStudyCautionCard">
-          <div class="card-heading">&#9888; 리스크</div>
-          <div class="card-empty">아직 작성된 내용이 없습니다.</div>
-        </div>
+        <div class="home-report-rule"></div>
+        <div id="homeReportBody"></div>
       </div>
     </div>
 
@@ -3993,12 +3996,22 @@
   }
 
   function goHomeToCalendarDate(key) {
+    setHomeReportDate(key);
     const menuItem = document.querySelector('.menu-item[data-page="calendar"]');
     document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
     document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
     if (menuItem) menuItem.classList.add('active');
     document.getElementById('page-calendar').classList.add('active');
     goToDiaryDate(key);
+  }
+
+  function syncWeekOffsetToDate(dateKey) {
+    const [y, m, d] = dateKey.split('-').map(Number);
+    const target = new Date(y, m - 1, d);
+    const targetSunday = new Date(target.getFullYear(), target.getMonth(), target.getDate() - target.getDay());
+    const now = new Date();
+    const nowSunday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+    homeWeekOffset = Math.round((targetSunday - nowSunday) / (7 * 86400000));
   }
 
   function renderHomeWeek() {
@@ -4019,6 +4032,7 @@
       if (i === 0) cell.classList.add('sunday');
       if (i === 6) cell.classList.add('saturday');
       if (key === todayKey) cell.classList.add('today');
+      if (key === homeReportDate) cell.classList.add('selected');
       const dayEvents = calendarEvents[key] || [];
       const hasEvents = dayEvents.length > 0;
       const diaryEntry = diaryData[key];
@@ -4067,64 +4081,91 @@
     return text.length > maxLen ? text.slice(0, maxLen) + '…' : text;
   }
 
+  let homeReportDate = formatDateKey(new Date());
+
+  function shiftDateKey(dateKey, delta) {
+    const [y, m, d] = dateKey.split('-').map(Number);
+    const dt = new Date(y, m - 1, d + delta);
+    return formatDateKey(dt);
+  }
+
+  function formatReportDateLabel(dateKey) {
+    const [y, m, d] = dateKey.split('-').map(Number);
+    const dt = new Date(y, m - 1, d);
+    const weekdayNames = ['일', '월', '화', '수', '목', '금', '토'];
+    return y + '.' + String(m).padStart(2, '0') + '.' + String(d).padStart(2, '0') + ' ' + weekdayNames[dt.getDay()];
+  }
+
+  function renderHomeReport(dateKey) {
+    document.getElementById('homeReportDateLabel').textContent = formatReportDateLabel(dateKey);
+    document.getElementById('homeReportDateInput').value = dateKey;
+
+    const body = document.getElementById('homeReportBody');
+    const sections = [];
+
+    const dayEvents = calendarEvents[dateKey] || [];
+    sections.push({
+      label: 'MARKET',
+      lines: dayEvents.map(ev => {
+        const meta = getCatMeta(ev);
+        const display = formatEventDisplay(ev);
+        return VALUE_CATS.indexOf(ev.cat) !== -1 ? (meta.label + ' ' + display) : (meta.label + ' · ' + display);
+      })
+    });
+
+    const diaryEntry = diaryData[dateKey];
+    const diaryLines = [];
+    if (diaryEntry) {
+      if (diaryEntry.aiSummary) diaryLines.push('\u2728 ' + diaryEntry.aiSummary);
+      else if (diaryEntry.summary) diaryLines.push(diaryEntry.summary);
+    }
+    sections.push({ label: 'DIARY', lines: diaryLines });
+
+    const studyLog = (typeof studyData !== 'undefined' && Array.isArray(studyData.log)) ? studyData.log : [];
+    const todoLines = studyLog.filter(e => e.date === dateKey && e.source === 'todo').map(e => e.title || '');
+    sections.push({ label: 'STUDY', lines: todoLines });
+
+    const checkLines = studyLog.filter(e => e.date === dateKey && e.source === 'check').map(e => e.title || '');
+    sections.push({ label: '오늘 시황', lines: checkLines });
+
+    const riskItemsAll = (typeof studyData !== 'undefined' && Array.isArray(studyData.riskItems)) ? studyData.riskItems : [];
+    const riskLines = riskItemsAll.filter(r => r.level === 'high' && formatDateKey(new Date(r.ts)) === dateKey).map(r => '\ud83d\udd34 ' + r.text);
+    sections.push({ label: 'RISK', lines: riskLines, isRisk: true });
+
+    body.innerHTML = sections.map(sec => {
+      const labelClass = sec.isRisk ? 'home-report-section-label risk' : 'home-report-section-label';
+      const content = sec.lines.length
+        ? sec.lines.map(l => '<div class="home-report-line' + (sec.isRisk ? ' risk' : '') + '">' + escapeHtml(l) + '</div>').join('')
+        : '<div class="home-report-empty">기록 없음</div>';
+      return '<div class="home-report-section"><div class="' + labelClass + '">' + sec.label + '</div>' + content + '</div>';
+    }).join('');
+  }
+
+  function setHomeReportDate(dateKey) {
+    homeReportDate = dateKey;
+    syncWeekOffsetToDate(dateKey);
+    renderHomeReport(homeReportDate);
+    renderHomeWeek();
+  }
+
+  document.getElementById('homeReportPrev').addEventListener('click', () => {
+    setHomeReportDate(shiftDateKey(homeReportDate, -1));
+  });
+  document.getElementById('homeReportNext').addEventListener('click', () => {
+    setHomeReportDate(shiftDateKey(homeReportDate, 1));
+  });
+  document.getElementById('homeReportDateBtn').addEventListener('click', () => {
+    const input = document.getElementById('homeReportDateInput');
+    if (input.showPicker) input.showPicker();
+    else input.click();
+  });
+  document.getElementById('homeReportDateInput').addEventListener('change', (e) => {
+    if (!e.target.value) return;
+    setHomeReportDate(e.target.value);
+  });
+
   function renderHomeDashboard() {
-    const todayKey = formatDateKey(new Date());
-
-    const diaryCard = document.getElementById('homeDiaryCard');
-    const entry = diaryData[todayKey];
-    if (entry && (entry.summary || entry.aiSummary || (entry.content && entry.content.trim()))) {
-      const moodEmoji = entry.mood ? (MOOD_EMOJI[entry.mood] || '') : '';
-      diaryCard.innerHTML =
-        '<div class="card-heading">&#128221; 오늘의 일기</div>' +
-        (moodEmoji ? '<div class="home-diary-mood">' + moodEmoji + '</div>' : '') +
-        (entry.aiSummary ? '<div class="home-diary-ai-summary">&#10024; ' + escapeHtml(entry.aiSummary) + '</div>' : '') +
-        (entry.summary ? '<div class="home-diary-summary">' + escapeHtml(entry.summary) + '</div>' : '');
-    } else {
-      diaryCard.innerHTML = '<div class="card-heading">&#128221; 오늘의 일기</div><div class="card-empty">아직 작성된 기록이 없습니다.</div>';
-    }
-
-    const calCard = document.getElementById('homeCalendarCard');
-    const todayEvents = calendarEvents[todayKey] || [];
-    if (todayEvents.length) {
-      calCard.innerHTML = '<div class="card-heading">&#128197; 오늘의 캘린더 이슈</div>' +
-        todayEvents.map(ev => {
-          const meta = getCatMeta(ev);
-          return '<div class="home-item-row"><span class="home-cat-badge" style="background:' + meta.color + ';">' + escapeHtml(meta.label) + '</span><span>' + escapeHtml(formatEventDisplay(ev)) + '</span></div>';
-        }).join('');
-    } else {
-      calCard.innerHTML = '<div class="card-heading">&#128197; 오늘의 캘린더 이슈</div><div class="card-empty">등록된 이슈가 없습니다.</div>';
-    }
-
-    const todayTodoCard = document.getElementById('homeStudyTodayCard');
-    const todos = (typeof studyData !== 'undefined' && Array.isArray(studyData.todos)) ? studyData.todos : [];
-    if (todos.length) {
-      todayTodoCard.innerHTML = '<div class="card-heading">&#128218; 오늘 공부할 것</div>' +
-        todos.map(t => '<div class="home-item-row"><span>' + escapeHtml(t.text) + '</span></div>').join('');
-    } else {
-      todayTodoCard.innerHTML = '<div class="card-heading">&#128218; 오늘 공부할 것</div><div class="card-empty">아직 추가된 항목이 없습니다.</div>';
-    }
-
-    const checkCardEl = document.getElementById('homeStudyCheckCard');
-    const checkTodos = (typeof studyData !== 'undefined' && Array.isArray(studyData.checkTodos)) ? studyData.checkTodos : [];
-    if (checkTodos.length) {
-      checkCardEl.innerHTML = '<div class="card-heading">&#9989; 오늘 시황</div>' +
-        checkTodos.map(t => '<div class="home-item-row"><span>' + escapeHtml(t.text) + '</span></div>').join('');
-    } else {
-      checkCardEl.innerHTML = '<div class="card-heading">&#9989; 오늘 시황</div><div class="card-empty">아직 추가된 항목이 없습니다.</div>';
-    }
-
-    const riskCardEl = document.getElementById('homeStudyCautionCard');
-    const riskItems = (typeof studyData !== 'undefined' && Array.isArray(studyData.riskItems)) ? studyData.riskItems : [];
-    const highRiskItems = riskItems.filter(r => r.level === 'high');
-    if (highRiskItems.length) {
-      riskCardEl.innerHTML = '<div class="card-heading">&#9888; 리스크</div>' +
-        highRiskItems.slice().reverse().map(r =>
-          '<div class="home-risk-row"><span class="risk-item-text">' + escapeHtml(r.text) + '</span><span class="risk-item-dot high"></span></div>'
-        ).join('');
-    } else {
-      riskCardEl.innerHTML = '<div class="card-heading">&#9888; 리스크</div><div class="card-empty">빨간불로 표시된 리스크가 없습니다.</div>';
-    }
-
+    renderHomeReport(homeReportDate);
     renderHomeTodayDate();
     renderHomeWeek();
   }
