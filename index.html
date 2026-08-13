@@ -162,6 +162,50 @@
   .weekly-ai-summary-text.editing { cursor: text; background: var(--bg-page); outline: 1px solid var(--border); }
   .weekly-ai-status { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
   .weekly-memo-input { width: 100%; box-sizing: border-box; margin-top: 8px; border: 1px dashed var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; color: var(--text-secondary); background: var(--bg-page); resize: vertical; min-height: 32px; font-family: inherit; }
+  .weekly-tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .weekly-tag-chip { font-size: 11px; padding: 3px 9px; border-radius: 999px; background: var(--bg-accent); color: var(--text-accent); cursor: pointer; }
+  .weekly-tag-chip:hover { background: var(--accent); color: #fff; }
+  .broker-report-card { padding: 0; overflow: hidden; }
+  .broker-report-letterhead { background: var(--bg-accent); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .broker-report-kicker { font-size: 10px; letter-spacing: 0.08em; color: var(--text-accent); margin: 0 0 4px; font-weight: 700; }
+  .broker-report-nav { justify-content: flex-start; gap: 10px; }
+  .broker-report-nav .home-report-date-label { font-size: 16px; }
+  .broker-report-badge { font-size: 11px; padding: 4px 10px; border-radius: 999px; background: #fde2e2; color: #dc2626; font-weight: 600; white-space: nowrap; }
+  .broker-report-body { padding: 20px; }
+  .broker-report-headline { font-size: 15px; font-weight: 700; line-height: 1.5; margin-bottom: 12px; cursor: pointer; border-radius: 6px; padding: 2px 4px; margin-left: -4px; }
+  .broker-report-headline:hover { background: var(--bg-hover); }
+  .broker-report-headline.is-empty { color: var(--text-muted); font-weight: 400; }
+  .broker-report-keypoints { border-left: 3px solid var(--accent); padding-left: 12px; margin-bottom: 16px; cursor: pointer; border-radius: 0 6px 6px 0; }
+  .broker-report-keypoints:hover { background: var(--bg-hover); }
+  .broker-report-keypoints-title { font-size: 11px; font-weight: 700; color: var(--text-accent); margin: 0 0 6px; letter-spacing: 0.03em; }
+  .broker-report-keypoint-line { font-size: 13px; margin: 0 0 4px; line-height: 1.6; }
+  .weekly-ai-edit-textarea { width: 100%; box-sizing: border-box; min-height: 140px; border: 1px solid var(--accent); border-radius: 8px; padding: 10px; font-size: 13px; font-family: inherit; line-height: 1.6; margin-bottom: 12px; }
+  .weekly-ai-box-actions { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .broker-report-section { margin-bottom: 16px; }
+  .broker-report-section-title { font-size: 11px; font-weight: 700; color: var(--text-accent); letter-spacing: 0.03em; margin: 0 0 8px; }
+  .broker-report-schedule-line { font-size: 13px; line-height: 1.7; }
+  .broker-report-risk-note { background: #fef2f2; border-radius: 8px; padding: 10px 12px; margin-bottom: 16px; }
+  .broker-report-risk-note-title { font-size: 11px; font-weight: 700; color: #dc2626; margin: 0 0 4px; }
+  .broker-report-risk-note-line { font-size: 13px; color: #dc2626; margin: 0; line-height: 1.6; }
+  .weekly-index-chart-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
+  .weekly-index-chart { background: var(--bg-page); border-radius: 8px; padding: 8px 10px 4px; }
+  .weekly-index-chart-label { font-size: 11px; color: var(--text-secondary); margin: 0 0 2px; font-weight: 600; }
+  .weekly-view-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+  .weekly-view-tab { border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); border-radius: 999px; padding: 6px 14px; font-size: 13px; cursor: pointer; }
+  .weekly-view-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .weekly-ai-box-btns { display: flex; gap: 6px; }
+  .weekly-archive-list { max-height: none; }
+  .weekly-archive-item { padding: 10px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .weekly-archive-item:last-child { border-bottom: none; }
+  .weekly-archive-item:hover { background: var(--bg-hover); }
+  .weekly-archive-week { font-size: 12px; font-weight: 700; color: var(--text-accent); margin: 0 0 3px; }
+  .weekly-archive-text { font-size: 13px; color: var(--text-primary); line-height: 1.6; white-space: pre-wrap; font-weight: 600; }
+  .weekly-archive-bullet { font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin-top: 2px; }
+  .weekly-search-result-item { padding: 8px 10px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 13px; }
+  .weekly-search-result-item:last-child { border-bottom: none; }
+  .weekly-search-result-item:hover { background: var(--bg-hover); }
+  .weekly-search-result-week { font-size: 11px; color: var(--text-muted); margin-right: 6px; }
+  .weekly-search-result-cat { font-size: 11px; color: var(--text-accent); margin-right: 4px; font-weight: 600; }
   .home-report-line .wd-day-prefix { color: var(--text-muted); margin-right: 4px; }
   .home-week-grid {
     display: grid;
@@ -1127,24 +1171,51 @@
 
     <div id="page-weekly" class="page-section">
       <div class="page-title">주간</div>
-      <div class="card home-report-card">
-        <div class="home-report-header">
-          <button class="cal-nav" id="weeklyReportPrev">&#8249;</button>
-          <div class="home-report-date-wrap">
-            <span class="home-report-date-label" id="weeklyReportLabel"></span>
-          </div>
-          <button class="cal-nav" id="weeklyReportNext">&#8250;</button>
+      <div class="weekly-view-tabs">
+        <button type="button" class="weekly-view-tab active" data-view="report">리포트</button>
+        <button type="button" class="weekly-view-tab" data-view="archive">요약 모아보기</button>
+      </div>
+
+      <div id="weeklyViewReport" class="weekly-view">
+        <div class="hashtag-search-bar" style="max-width:none;">
+          <input type="text" id="weeklySearchInput" placeholder="모든 주에서 검색 (#태그 포함)" style="max-width:none;">
+          <div class="hashtag-search-results" id="weeklySearchResults"></div>
         </div>
-        <div class="home-report-rule"></div>
-        <div class="weekly-ai-box">
-          <div class="weekly-ai-box-header">
-            <span class="weekly-ai-box-title">&#10024; AI 주간 요약</span>
-            <button id="weeklyAiBtn" class="weekly-ai-btn">요약 생성</button>
+        <div class="card broker-report-card">
+          <div class="broker-report-letterhead">
+            <div>
+              <p class="broker-report-kicker">WEEKLY REPORT</p>
+              <div class="home-report-header broker-report-nav">
+                <button class="cal-nav" id="weeklyReportPrev">&#8249;</button>
+                <span class="home-report-date-label" id="weeklyReportLabel"></span>
+                <button class="cal-nav" id="weeklyReportNext">&#8250;</button>
+              </div>
+            </div>
+            <div id="weeklyRiskBadge" class="broker-report-badge" style="display:none;"></div>
           </div>
-          <div id="weeklyAiSummary" class="weekly-ai-summary-text"></div>
-          <div id="weeklyAiStatus" class="weekly-ai-status"></div>
+
+          <div class="broker-report-body">
+            <div id="weeklyAiHeadline" class="broker-report-headline"></div>
+            <div id="weeklyAiBullets" class="broker-report-keypoints"></div>
+            <div class="weekly-ai-box-actions">
+              <button id="weeklyAiBtn" class="weekly-ai-btn">요약 생성</button>
+              <span id="weeklyAiStatus" class="weekly-ai-status"></span>
+            </div>
+            <textarea id="weeklyAiEdit" class="weekly-ai-edit-textarea" style="display:none;"></textarea>
+
+            <div id="weeklyMarketBlock" class="broker-report-section"></div>
+            <div id="weeklyRiskNote" class="broker-report-risk-note" style="display:none;"></div>
+            <div id="weeklyTagRow" class="weekly-tag-row"></div>
+            <textarea id="weeklyMemoInput" class="weekly-memo-input" placeholder="이번 주 메모..."></textarea>
+          </div>
         </div>
-        <div id="weeklyReportBody"></div>
+      </div>
+
+      <div id="weeklyViewArchive" class="weekly-view" style="display:none;">
+        <div class="card">
+          <div class="doc-header-title" style="margin-bottom:10px;">주간 요약 모아보기</div>
+          <div id="weeklyArchiveList" class="weekly-archive-list"></div>
+        </div>
       </div>
     </div>
 
@@ -3144,6 +3215,8 @@
         item.content = editor.innerHTML;
         clearTimeout(editor._saveTimer);
         editor._saveTimer = setTimeout(saveMonkeyData, 400);
+        const updatedPreview = stripHtmlPreview(item.content, 60);
+        previewEl.textContent = updatedPreview || '내용 없음';
       });
       attachStudyLogEditorBehaviors(editor);
       body.appendChild(editor);
@@ -4118,6 +4191,12 @@
     return text.length > maxLen ? text.slice(0, maxLen) + '…' : text;
   }
 
+  function stripHtmlFull(html) {
+    const d = document.createElement('div');
+    d.innerHTML = html || '';
+    return (d.textContent || '').replace(/\s+/g, ' ').trim();
+  }
+
   let homeReportDate = formatDateKey(new Date());
 
   function shiftDateKey(dateKey, delta) {
@@ -4142,7 +4221,7 @@
 
     const dayEvents = calendarEvents[dateKey] || [];
     sections.push({
-      label: 'MARKET',
+      label: '캘린더',
       lines: dayEvents.map(ev => {
         const meta = getCatMeta(ev);
         const display = formatEventDisplay(ev);
@@ -4156,18 +4235,18 @@
       if (diaryEntry.aiSummary) diaryLines.push('\u2728 ' + diaryEntry.aiSummary);
       else if (diaryEntry.summary) diaryLines.push(diaryEntry.summary);
     }
-    sections.push({ label: 'DIARY', lines: diaryLines });
+    sections.push({ label: '일기', lines: diaryLines });
 
     const studyLog = (typeof studyData !== 'undefined' && Array.isArray(studyData.log)) ? studyData.log : [];
     const todoLines = studyLog.filter(e => e.date === dateKey && e.source === 'todo').map(e => e.title || '');
-    sections.push({ label: 'STUDY', lines: todoLines });
+    sections.push({ label: '오늘 공부할 것', lines: todoLines });
 
     const checkLines = studyLog.filter(e => e.date === dateKey && e.source === 'check').map(e => e.title || '');
     sections.push({ label: '오늘 시황', lines: checkLines });
 
     const riskItemsAll = (typeof studyData !== 'undefined' && Array.isArray(studyData.riskItems)) ? studyData.riskItems : [];
     const riskLines = riskItemsAll.filter(r => r.level === 'high' && formatDateKey(new Date(r.ts)) === dateKey).map(r => '\ud83d\udd34 ' + r.text);
-    sections.push({ label: 'RISK', lines: riskLines, isRisk: true });
+    sections.push({ label: '리스크', lines: riskLines, isRisk: true });
 
     body.innerHTML = sections.map(sec => {
       const labelClass = sec.isRisk ? 'home-report-section-label risk' : 'home-report-section-label';
@@ -4233,10 +4312,6 @@
     return keys;
   }
 
-  function tagSuffix(tags) {
-    return (tags && tags.length) ? (' ' + tags.map(t => '#' + t).join(' ')) : '';
-  }
-
   function buildWeeklySections(weekKeys) {
     const marketLines = [];
     const diaryLines = [];
@@ -4244,42 +4319,154 @@
     const checkLines = [];
     const monkeyLines = [];
     const riskLines = [];
+    const diaryTags = new Set();
+    const studyTags = new Set();
+    const checkTags = new Set();
+    const monkeyTags = new Set();
+    const indexSeries = { fear: [], vix: [], tenyr: [] };
 
     weekKeys.forEach((dateKey, i) => {
       const wd = WEEKDAY_LABELS[i];
+      const dayNum = Number(dateKey.split('-')[2]);
       const dayEvents = calendarEvents[dateKey] || [];
       dayEvents.forEach(ev => {
         const meta = getCatMeta(ev);
         const display = formatEventDisplay(ev);
-        const text = VALUE_CATS.indexOf(ev.cat) !== -1 ? (meta.label + ' ' + display) : (meta.label + ' · ' + display);
-        marketLines.push({ wd: wd, text: text });
+        const isValueCat = VALUE_CATS.indexOf(ev.cat) !== -1;
+        if (isValueCat) {
+          if (ev.value && !isNaN(parseFloat(ev.value))) {
+            indexSeries[ev.cat].push({ wd: wd, day: dayNum, value: parseFloat(ev.value) });
+          }
+        } else {
+          const text = meta.label + ' · ' + display;
+          marketLines.push({ wd: wd, text: text });
+        }
       });
 
       const diaryEntry = diaryData[dateKey];
       if (diaryEntry) {
         const t = diaryEntry.aiSummary ? ('\u2728 ' + diaryEntry.aiSummary) : (diaryEntry.summary || '');
-        if (t) diaryLines.push({ wd: wd, text: t + tagSuffix(diaryEntry.tags) });
+        if (t) diaryLines.push({ wd: wd, text: t });
+        (diaryEntry.tags || []).forEach(tag => diaryTags.add(tag));
       }
 
       const studyLog = (typeof studyData !== 'undefined' && Array.isArray(studyData.log)) ? studyData.log : [];
-      studyLog.filter(e => e.date === dateKey && e.source === 'todo').forEach(e => studyLines.push({ wd: wd, text: (e.title || '') + tagSuffix(e.tags) }));
-      studyLog.filter(e => e.date === dateKey && e.source === 'check').forEach(e => checkLines.push({ wd: wd, text: (e.title || '') + tagSuffix(e.tags) }));
+      studyLog.filter(e => e.date === dateKey && e.source !== 'check').forEach(e => {
+        const excerpt = stripHtmlFull(e.content);
+        const text = excerpt ? ((e.title || '') + ' - ' + excerpt) : (e.title || '');
+        studyLines.push({ wd: wd, text: text });
+        (e.tags || []).forEach(tag => studyTags.add(tag));
+      });
+      studyLog.filter(e => e.date === dateKey && e.source === 'check').forEach(e => {
+        const excerpt = stripHtmlFull(e.content);
+        const text = excerpt ? ((e.title || '') + ' - ' + excerpt) : (e.title || '');
+        checkLines.push({ wd: wd, text: text });
+        (e.tags || []).forEach(tag => checkTags.add(tag));
+      });
 
       const monkeyLog = (typeof monkeyData !== 'undefined' && Array.isArray(monkeyData.log)) ? monkeyData.log : [];
-      monkeyLog.filter(e => e.date === dateKey).forEach(e => monkeyLines.push({ wd: wd, text: (e.title || '') + tagSuffix(e.tags) }));
+      monkeyLog.filter(e => e.date === dateKey).forEach(e => {
+        const excerpt = stripHtmlFull(e.content);
+        const text = excerpt ? ((e.title || '') + ' - ' + excerpt) : (e.title || '');
+        monkeyLines.push({ wd: wd, text: text });
+        (e.tags || []).forEach(tag => monkeyTags.add(tag));
+      });
 
       const riskItemsAll = (typeof studyData !== 'undefined' && Array.isArray(studyData.riskItems)) ? studyData.riskItems : [];
       riskItemsAll.filter(r => r.level === 'high' && formatDateKey(new Date(r.ts)) === dateKey).forEach(r => riskLines.push({ wd: wd, text: '\ud83d\udd34 ' + r.text }));
     });
 
     return [
-      { key: 'MARKET', label: 'MARKET', items: marketLines },
-      { key: 'DIARY', label: 'DIARY', items: diaryLines },
-      { key: 'STUDY', label: 'STUDY', items: studyLines },
-      { key: 'CHECK', label: '오늘 시황', items: checkLines },
-      { key: 'MONKEY', label: 'MONKEY CLASS', items: monkeyLines },
-      { key: 'RISK', label: 'RISK', items: riskLines, isRisk: true }
+      { key: 'MARKET', label: '캘린더', items: marketLines, indexSeries: indexSeries },
+      { key: 'DIARY', label: '일기', items: diaryLines, tags: Array.from(diaryTags), tagTarget: 'calendar' },
+      { key: 'STUDY', label: '오늘 공부할 것', items: studyLines, tags: Array.from(studyTags), tagTarget: 'study' },
+      { key: 'CHECK', label: '오늘 시황', items: checkLines, tags: Array.from(checkTags), tagTarget: 'study' },
+      { key: 'MONKEY', label: '몽키수업', items: monkeyLines, tags: Array.from(monkeyTags), tagTarget: 'monkey' },
+      { key: 'RISK', label: '리스크', items: riskLines, isRisk: true }
     ];
+  }
+
+  function buildIndexChartSVG(series, color) {
+    const w = 300, h = 56, padX = 12, padY = 10;
+    const values = series.map(p => p.value);
+    const min = Math.min.apply(null, values);
+    const max = Math.max.apply(null, values);
+    const range = (max - min) || 1;
+    const stepX = series.length > 1 ? (w - padX * 2) / (series.length - 1) : 0;
+    const points = series.map((p, i) => {
+      const x = padX + stepX * i;
+      const y = series.length > 1
+        ? (h - padY) - ((p.value - min) / range) * (h - padY * 2)
+        : h / 2;
+      return { x: x, y: y, wd: p.wd, day: p.day, value: p.value };
+    });
+    const polyline = points.map(p => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+    const dots = points.map(p =>
+      '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="2.5" fill="' + color + '"></circle>' +
+      '<text x="' + p.x.toFixed(1) + '" y="' + (p.y - 6).toFixed(1) + '" font-size="9" fill="' + color + '" text-anchor="middle">' + p.value + '</text>'
+    ).join('');
+    const labels = points.map(p =>
+      '<text x="' + p.x.toFixed(1) + '" y="' + (h + 9) + '" font-size="9" fill="var(--text-muted)" text-anchor="middle">' + p.wd +
+      '<tspan x="' + p.x.toFixed(1) + '" dy="10">' + p.day + '</tspan></text>'
+    ).join('');
+    return '<svg viewBox="0 0 ' + w + ' ' + (h + 24) + '" style="width:100%;max-width:320px;height:76px;display:block;">' +
+      '<polyline points="' + polyline + '" fill="none" stroke="' + color + '" stroke-width="2"></polyline>' +
+      dots + labels + '</svg>';
+  }
+
+  function renderIndexCharts(indexSeries) {
+    const meta = { fear: { label: '공포지수', color: '#dc2626' }, vix: { label: 'VIX지수', color: '#059669' }, tenyr: { label: '10년물 국채금리', color: '#0891b2' } };
+    const blocks = ['fear', 'vix', 'tenyr'].filter(k => indexSeries[k] && indexSeries[k].length).map(k => {
+      return '<div class="weekly-index-chart">' +
+        '<p class="weekly-index-chart-label">' + meta[k].label + '</p>' +
+        buildIndexChartSVG(indexSeries[k], meta[k].color) +
+        '</div>';
+    });
+    return blocks.length ? '<div class="weekly-index-chart-group">' + blocks.join('') + '</div>' : '';
+  }
+
+  function switchAppPage(pageKey) {
+    const menuItem = document.querySelector('.menu-item[data-page="' + pageKey + '"]');
+    document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+    document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+    if (menuItem) menuItem.classList.add('active');
+    const pageEl = document.getElementById('page-' + pageKey);
+    if (pageEl) pageEl.classList.add('active');
+  }
+
+  function goToTagOnPage(target, tag) {
+    switchAppPage(target);
+    if (target === 'study') {
+      studyTagFilter = tag;
+      studyLogSourceFilter = 'all';
+      document.querySelectorAll('#studyLogSourceTabs .source-tab').forEach(b => b.classList.toggle('active', b.dataset.source === 'all'));
+      studyLogPage = 1;
+      renderStudyLog();
+    } else if (target === 'monkey') {
+      monkeyTagFilter = tag;
+      monkeyLogPage = 1;
+      renderMonkeyLog();
+    } else if (target === 'calendar') {
+      const input = document.getElementById('hashtagSearchInput');
+      input.value = '#' + tag;
+      input.dispatchEvent(new Event('input'));
+    }
+  }
+
+  function parseWeeklySummaryText(raw) {
+    const lines = (raw || '').split('\n').map(l => l.trim()).filter(l => l);
+    let headline = '';
+    const bullets = [];
+    lines.forEach(line => {
+      if (line.startsWith('- ') || line.startsWith('・') || line.startsWith('•')) {
+        bullets.push(line.replace(/^[-・•]\s*/, ''));
+      } else if (!headline) {
+        headline = line;
+      } else {
+        bullets.push(line);
+      }
+    });
+    return { headline: headline, bullets: bullets };
   }
 
   function renderWeeklyReport() {
@@ -4291,53 +4478,115 @@
 
     const weekKey = weekKeys[0];
     const summary = weeklyAiData[weekKey];
-    const summaryEl = document.getElementById('weeklyAiSummary');
     const btn = document.getElementById('weeklyAiBtn');
-    summaryEl.classList.toggle('is-empty', !summary);
-    summaryEl.textContent = summary || '아직 이번 주 요약이 없습니다. (요약 생성 후에는 클릭해서 직접 고칠 수도 있어요)';
     btn.textContent = summary ? '다시 생성' : '요약 생성';
     document.getElementById('weeklyAiStatus').textContent = '';
+    document.getElementById('weeklyAiEdit').style.display = 'none';
 
-    const memoForWeek = weeklyMemoData[weekKey] || {};
+    const headlineEl = document.getElementById('weeklyAiHeadline');
+    const bulletsEl = document.getElementById('weeklyAiBullets');
+    if (summary) {
+      const parsed = parseWeeklySummaryText(summary);
+      headlineEl.classList.remove('is-empty');
+      headlineEl.textContent = parsed.headline || summary;
+      if (parsed.bullets.length) {
+        bulletsEl.innerHTML = '<div class="broker-report-keypoints-title">KEY POINTS</div>' +
+          parsed.bullets.map(b => '<div class="broker-report-keypoint-line">・ ' + escapeHtml(b) + '</div>').join('');
+        bulletsEl.style.display = 'block';
+      } else {
+        bulletsEl.innerHTML = '';
+        bulletsEl.style.display = 'none';
+      }
+    } else {
+      headlineEl.classList.add('is-empty');
+      headlineEl.textContent = '아직 이번 주 요약이 없습니다. 클릭하거나 "요약 생성"을 눌러보세요.';
+      bulletsEl.innerHTML = '';
+      bulletsEl.style.display = 'none';
+    }
+
     const sections = buildWeeklySections(weekKeys);
-    const body = document.getElementById('weeklyReportBody');
-    body.innerHTML = sections.map(sec => {
-      const labelClass = sec.isRisk ? 'home-report-section-label risk' : 'home-report-section-label';
-      const content = sec.items.length
-        ? sec.items.map(it => '<div class="home-report-line' + (sec.isRisk ? ' risk' : '') + '"><span class="wd-day-prefix">' + it.wd + '</span>' + escapeHtml(it.text) + '</div>').join('')
-        : '<div class="home-report-empty">기록 없음</div>';
-      const memoText = memoForWeek[sec.key] || '';
-      const memoHtml = '<textarea class="weekly-memo-input" data-sec="' + sec.key + '" placeholder="이 항목에 메모 추가...">' + escapeHtml(memoText) + '</textarea>';
-      return '<div class="home-report-section"><div class="' + labelClass + '">' + sec.label + '</div>' + content + memoHtml + '</div>';
-    }).join('');
+    const marketSection = sections.find(s => s.key === 'MARKET');
+    const riskSection = sections.find(s => s.key === 'RISK');
 
-    body.querySelectorAll('.weekly-memo-input').forEach(ta => {
-      ta.addEventListener('blur', () => {
-        if (!weeklyMemoData[weekKey]) weeklyMemoData[weekKey] = {};
-        weeklyMemoData[weekKey][ta.dataset.sec] = ta.value;
-        saveWeeklyMemoData();
+    const chartsHtml = marketSection && marketSection.indexSeries ? renderIndexCharts(marketSection.indexSeries) : '';
+    const scheduleHtml = (marketSection && marketSection.items.length)
+      ? marketSection.items.map(it => '<div class="broker-report-schedule-line"><span class="wd-day-prefix">' + it.wd + '</span>' + escapeHtml(it.text) + '</div>').join('')
+      : '';
+    const marketBlock = document.getElementById('weeklyMarketBlock');
+    if (chartsHtml || scheduleHtml) {
+      marketBlock.innerHTML = '<div class="broker-report-section-title">MARKET</div>' + chartsHtml + scheduleHtml;
+      marketBlock.style.display = 'block';
+    } else {
+      marketBlock.innerHTML = '';
+      marketBlock.style.display = 'none';
+    }
+
+    const riskBadge = document.getElementById('weeklyRiskBadge');
+    const riskNoteEl = document.getElementById('weeklyRiskNote');
+    if (riskSection && riskSection.items.length) {
+      riskBadge.textContent = '리스크 ' + riskSection.items.length + '건';
+      riskBadge.style.display = 'inline-block';
+      riskNoteEl.innerHTML = '<div class="broker-report-risk-note-title">RISK NOTE</div>' +
+        riskSection.items.map(it => '<div class="broker-report-risk-note-line"><span class="wd-day-prefix">' + it.wd + '</span>' + escapeHtml(it.text) + '</div>').join('');
+      riskNoteEl.style.display = 'block';
+    } else {
+      riskBadge.style.display = 'none';
+      riskNoteEl.innerHTML = '';
+      riskNoteEl.style.display = 'none';
+    }
+
+    const allTags = [];
+    const seenTags = new Set();
+    sections.forEach(sec => {
+      (sec.tags || []).forEach(t => {
+        const dedupeKey = t + '|' + sec.tagTarget;
+        if (seenTags.has(dedupeKey)) return;
+        seenTags.add(dedupeKey);
+        allTags.push({ tag: t, target: sec.tagTarget });
       });
     });
+    const tagRow = document.getElementById('weeklyTagRow');
+    if (allTags.length) {
+      tagRow.innerHTML = allTags.map(t => '<span class="weekly-tag-chip" data-target="' + t.target + '" data-tag="' + escapeHtml(t.tag) + '">#' + escapeHtml(t.tag) + '</span>').join('');
+      tagRow.querySelectorAll('.weekly-tag-chip').forEach(chip => {
+        chip.addEventListener('click', () => goToTagOnPage(chip.dataset.target, chip.dataset.tag));
+      });
+    } else {
+      tagRow.innerHTML = '';
+    }
+
+    const memoInput = document.getElementById('weeklyMemoInput');
+    memoInput.value = weeklyMemoData[weekKey] || '';
   }
 
-  document.getElementById('weeklyAiSummary').addEventListener('click', function () {
-    if (this.isContentEditable) return;
-    this.contentEditable = 'true';
-    this.classList.add('editing');
-    this.focus();
-    document.execCommand('selectAll');
-  });
-  document.getElementById('weeklyAiSummary').addEventListener('blur', function () {
-    if (!this.isContentEditable) return;
-    this.contentEditable = 'false';
-    this.classList.remove('editing');
+  document.getElementById('weeklyMemoInput').addEventListener('blur', function () {
     const weekKeys = getWeekDateKeys(weeklyReportOffset);
     const weekKey = weekKeys[0];
-    const val = this.textContent.trim();
-    const placeholder = '아직 이번 주 요약이 없습니다. (요약 생성 후에는 클릭해서 직접 고칠 수도 있어요)';
-    if (val && val !== placeholder) weeklyAiData[weekKey] = val;
+    if (this.value.trim()) weeklyMemoData[weekKey] = this.value;
+    else delete weeklyMemoData[weekKey];
+    saveWeeklyMemoData();
+  });
+
+  function enterWeeklySummaryEdit() {
+    const weekKeys = getWeekDateKeys(weeklyReportOffset);
+    const weekKey = weekKeys[0];
+    const editEl = document.getElementById('weeklyAiEdit');
+    editEl.value = weeklyAiData[weekKey] || '';
+    editEl.style.display = 'block';
+    document.getElementById('weeklyAiHeadline').style.display = 'none';
+    document.getElementById('weeklyAiBullets').style.display = 'none';
+    editEl.focus();
+  }
+  document.getElementById('weeklyAiHeadline').addEventListener('click', enterWeeklySummaryEdit);
+  document.getElementById('weeklyAiBullets').addEventListener('click', enterWeeklySummaryEdit);
+  document.getElementById('weeklyAiEdit').addEventListener('blur', function () {
+    const weekKeys = getWeekDateKeys(weeklyReportOffset);
+    const weekKey = weekKeys[0];
+    const val = this.value.trim();
+    if (val) weeklyAiData[weekKey] = val;
     else delete weeklyAiData[weekKey];
     saveWeeklyAiData();
+    document.getElementById('weeklyAiHeadline').style.display = 'block';
     renderWeeklyReport();
   });
 
@@ -4359,7 +4608,9 @@
     const rawParts = [];
     sections.forEach(sec => {
       if (!sec.items.length) return;
-      rawParts.push(sec.label + ': ' + sec.items.map(it => it.wd + ' ' + it.text).join(' / '));
+      let line = sec.label + ': ' + sec.items.map(it => it.wd + ' ' + it.text).join(' / ');
+      if (sec.tags && sec.tags.length) line += ' (태그: ' + sec.tags.map(t => '#' + t).join(' ') + ')';
+      rawParts.push(line);
     });
     const rawText = rawParts.join('\n');
     if (!rawText.trim()) {
@@ -4382,6 +4633,156 @@
     } finally {
       btn.disabled = false;
     }
+  });
+
+  /* ===== 주간 검색 (모든 주 대상) ===== */
+  function dateKeyToWeekStartKey(dateKey) {
+    const [y, m, d] = dateKey.split('-').map(Number);
+    const dt = new Date(y, m - 1, d);
+    const sunday = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate() - dt.getDay());
+    return formatDateKey(sunday);
+  }
+
+  function weekStartKeyToOffset(weekStartKey) {
+    const now = new Date();
+    const nowSunday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+    const [y, m, d] = weekStartKey.split('-').map(Number);
+    const target = new Date(y, m - 1, d);
+    return Math.round((target - nowSunday) / (7 * 86400000));
+  }
+
+  function formatWeekRangeLabel(weekStartKey) {
+    const [y, m, d] = weekStartKey.split('-').map(Number);
+    const start = new Date(y, m - 1, d);
+    const end = new Date(y, m - 1, d + 6);
+    const fmt = (dt) => (dt.getMonth() + 1) + '.' + dt.getDate();
+    return start.getFullYear() + '년 ' + fmt(start) + ' - ' + fmt(end);
+  }
+
+  function collectAllSearchableRecords() {
+    const records = [];
+
+    Object.keys(calendarEvents).forEach(dateKey => {
+      (calendarEvents[dateKey] || []).forEach(ev => {
+        const meta = getCatMeta(ev);
+        const display = formatEventDisplay(ev);
+        const text = VALUE_CATS.indexOf(ev.cat) !== -1 ? (meta.label + ' ' + display) : (meta.label + ' · ' + display);
+        records.push({ dateKey: dateKey, cat: '캘린더', text: text, tags: [] });
+      });
+    });
+
+    Object.keys(diaryData).forEach(dateKey => {
+      const entry = diaryData[dateKey];
+      if (!entry) return;
+      const t = entry.aiSummary || entry.summary || '';
+      if (t || (entry.tags && entry.tags.length)) {
+        records.push({ dateKey: dateKey, cat: '일기', text: t, tags: entry.tags || [] });
+      }
+    });
+
+    ((typeof studyData !== 'undefined' && Array.isArray(studyData.log)) ? studyData.log : []).forEach(e => {
+      const cat = e.source === 'check' ? '오늘 시황' : (e.source === 'todo' ? '오늘 공부할 것' : '공부기록');
+      const excerpt = stripHtmlFull(e.content);
+      const text = excerpt ? ((e.title || '') + ' - ' + excerpt) : (e.title || '');
+      records.push({ dateKey: e.date, cat: cat, text: text, tags: e.tags || [] });
+    });
+
+    ((typeof monkeyData !== 'undefined' && Array.isArray(monkeyData.log)) ? monkeyData.log : []).forEach(e => {
+      const excerpt = stripHtmlFull(e.content);
+      const text = excerpt ? ((e.title || '') + ' - ' + excerpt) : (e.title || '');
+      records.push({ dateKey: e.date, cat: '몽키수업', text: text, tags: e.tags || [] });
+    });
+
+    ((typeof studyData !== 'undefined' && Array.isArray(studyData.riskItems)) ? studyData.riskItems : []).forEach(r => {
+      if (r.level !== 'high') return;
+      records.push({ dateKey: formatDateKey(new Date(r.ts)), cat: '리스크', text: r.text, tags: [] });
+    });
+
+    return records;
+  }
+
+  function renderWeeklySearchResults(query) {
+    const resultsEl = document.getElementById('weeklySearchResults');
+    const q = query.trim().replace(/^#/, '').toLowerCase();
+    if (!q) {
+      resultsEl.classList.remove('open');
+      resultsEl.innerHTML = '';
+      return;
+    }
+    const all = collectAllSearchableRecords();
+    const matches = all.filter(r =>
+      (r.text && r.text.toLowerCase().includes(q)) ||
+      (r.tags && r.tags.some(t => t.toLowerCase().includes(q)))
+    );
+    matches.sort((a, b) => b.dateKey.localeCompare(a.dateKey));
+
+    if (!matches.length) {
+      resultsEl.innerHTML = '<div class="study-log-empty" style="padding:12px;">검색 결과가 없습니다.</div>';
+      resultsEl.classList.add('open');
+      return;
+    }
+
+    resultsEl.innerHTML = matches.slice(0, 30).map(r => {
+      const weekStartKey = dateKeyToWeekStartKey(r.dateKey);
+      const tagsText = (r.tags && r.tags.length) ? (' ' + r.tags.map(t => '#' + t).join(' ')) : '';
+      return '<div class="weekly-search-result-item" data-week="' + weekStartKey + '">' +
+        '<span class="weekly-search-result-week">' + formatWeekRangeLabel(weekStartKey) + '</span>' +
+        '<span class="weekly-search-result-cat">' + escapeHtml(r.cat) + '</span>' +
+        escapeHtml(r.text) + '<span style="color:var(--text-accent);">' + escapeHtml(tagsText) + '</span>' +
+        '</div>';
+    }).join('');
+    resultsEl.classList.add('open');
+
+    resultsEl.querySelectorAll('.weekly-search-result-item').forEach(item => {
+      item.addEventListener('click', () => {
+        weeklyReportOffset = weekStartKeyToOffset(item.dataset.week);
+        renderWeeklyReport();
+        resultsEl.classList.remove('open');
+        document.getElementById('weeklySearchInput').value = '';
+      });
+    });
+  }
+
+  document.getElementById('weeklySearchInput').addEventListener('input', (e) => {
+    renderWeeklySearchResults(e.target.value);
+  });
+
+  /* ===== AI 주간 요약 모아보기 ===== */
+  function renderWeeklyArchiveList() {
+    const listEl = document.getElementById('weeklyArchiveList');
+    const weekKeysWithSummary = Object.keys(weeklyAiData).sort((a, b) => b.localeCompare(a));
+    if (!weekKeysWithSummary.length) {
+      listEl.innerHTML = '<div class="study-log-empty">아직 생성된 주간 요약이 없습니다.</div>';
+      return;
+    }
+    listEl.innerHTML = weekKeysWithSummary.map(wk => {
+      const parsed = parseWeeklySummaryText(weeklyAiData[wk]);
+      const bulletPreview = parsed.bullets.slice(0, 3).map(b => '<div class="weekly-archive-bullet">・ ' + escapeHtml(b) + '</div>').join('');
+      return '<div class="weekly-archive-item" data-week="' + wk + '">' +
+        '<div class="weekly-archive-week">' + formatWeekRangeLabel(wk) + '</div>' +
+        '<div class="weekly-archive-text">' + escapeHtml(parsed.headline || weeklyAiData[wk]) + '</div>' +
+        bulletPreview +
+        '</div>';
+    }).join('');
+    listEl.querySelectorAll('.weekly-archive-item').forEach(item => {
+      item.addEventListener('click', () => {
+        weeklyReportOffset = weekStartKeyToOffset(item.dataset.week);
+        renderWeeklyReport();
+        document.querySelectorAll('.weekly-view-tab').forEach(t => t.classList.toggle('active', t.dataset.view === 'report'));
+        document.getElementById('weeklyViewReport').style.display = 'block';
+        document.getElementById('weeklyViewArchive').style.display = 'none';
+      });
+    });
+  }
+
+  document.querySelectorAll('.weekly-view-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.weekly-view-tab').forEach(t => t.classList.toggle('active', t === tab));
+      const view = tab.dataset.view;
+      document.getElementById('weeklyViewReport').style.display = view === 'report' ? 'block' : 'none';
+      document.getElementById('weeklyViewArchive').style.display = view === 'archive' ? 'block' : 'none';
+      if (view === 'archive') renderWeeklyArchiveList();
+    });
   });
 
   renderWeeklyReport();
