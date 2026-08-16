@@ -98,12 +98,6 @@
     font-weight: 600;
     margin: 0 0 20px;
   }
-  .card-grid-3 {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-    margin-bottom: 16px;
-  }
   .card-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -150,16 +144,9 @@
   .home-report-line + .home-report-line { margin-top: 2px; }
   .home-report-line.risk { color: #dc2626; }
   .home-report-empty { font-size: 13px; color: var(--text-muted); }
-  .weekly-ai-box { background: var(--bg-accent); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
-  .weekly-ai-box-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-  .weekly-ai-box-title { font-size: 11px; font-weight: 700; color: var(--text-accent); letter-spacing: 0.03em; }
   .weekly-ai-btn { border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); border-radius: 7px; padding: 4px 10px; font-size: 11px; cursor: pointer; }
   .weekly-ai-btn:hover { background: var(--bg-hover); }
   .weekly-ai-btn:disabled { opacity: 0.6; cursor: default; }
-  .weekly-ai-summary-text { font-size: 13px; line-height: 1.7; color: var(--text-primary); white-space: pre-wrap; cursor: pointer; border-radius: 6px; padding: 2px 4px; margin: -2px -4px; }
-  .weekly-ai-summary-text.is-empty { color: var(--text-muted); }
-  .weekly-ai-summary-text:hover { background: var(--bg-hover); }
-  .weekly-ai-summary-text.editing { cursor: text; background: var(--bg-page); outline: 1px solid var(--border); }
   .weekly-ai-status { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
   .weekly-memo-input { width: 100%; box-sizing: border-box; margin-top: 8px; border: 1px dashed var(--border); border-radius: 6px; padding: 6px 8px; font-size: 12px; color: var(--text-secondary); background: var(--bg-page); resize: vertical; min-height: 32px; font-family: inherit; }
   .weekly-tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
@@ -193,7 +180,6 @@
   .weekly-view-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
   .weekly-view-tab { border: 1px solid var(--border); background: var(--bg-card); color: var(--text-secondary); border-radius: 999px; padding: 6px 14px; font-size: 13px; cursor: pointer; }
   .weekly-view-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .weekly-ai-box-btns { display: flex; gap: 6px; }
   .weekly-archive-list { max-height: none; }
   .weekly-archive-item { padding: 10px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
   .weekly-archive-item:last-child { border-bottom: none; }
@@ -201,6 +187,16 @@
   .weekly-archive-week { font-size: 12px; font-weight: 700; color: var(--text-accent); margin: 0 0 3px; }
   .weekly-archive-text { font-size: 13px; color: var(--text-primary); line-height: 1.6; white-space: pre-wrap; font-weight: 600; }
   .weekly-archive-bullet { font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin-top: 2px; }
+  .backup-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0 0 14px; }
+  .backup-status { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+  .backup-status.success { color: #059669; }
+  .backup-status.error { color: #dc2626; }
+  .storage-bar-track { width: 100%; height: 10px; border-radius: 999px; background: var(--bg-page); overflow: hidden; }
+  .storage-bar-fill { height: 100%; border-radius: 999px; background: #059669; transition: width 0.3s; }
+  .storage-bar-fill.warn { background: #d97706; }
+  .storage-bar-fill.danger { background: #dc2626; }
+  .storage-error-toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: #2c2c2a; color: #fff; padding: 12px 18px; border-radius: 10px; font-size: 13px; max-width: 360px; text-align: center; opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; z-index: 999; box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+  .storage-error-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .weekly-search-result-item { padding: 8px 10px; border-bottom: 1px solid var(--border); cursor: pointer; font-size: 13px; }
   .weekly-search-result-item:last-child { border-bottom: none; }
   .weekly-search-result-item:hover { background: var(--bg-hover); }
@@ -276,16 +272,6 @@
     font-size: 13px;
     color: var(--text-muted);
   }
-  .home-diary-mood { font-size: 20px; margin-bottom: 4px; }
-  .home-diary-summary { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
-  .home-diary-preview { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
-  .home-item-row { display: flex; align-items: flex-start; gap: 6px; padding: 5px 0; font-size: 12px; border-top: 1px dashed var(--border); }
-  .home-item-row:first-child { border-top: none; padding-top: 0; }
-  .home-cat-badge { flex-shrink: 0; padding: 1px 7px; border-radius: 20px; font-size: 10px; color: #fff; }
-  .home-cat-badge.cat-earnings { background: #8b5cf6; }
-  .home-cat-badge.cat-disclosure { background: #f0993d; }
-  .home-cat-badge.cat-holiday { background: #3d6fb4; }
-  .home-cat-badge.cat-custom { background: #6b7280; }
   .home-doc-path { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
   .home-doc-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
   .home-doc-preview { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
@@ -905,7 +891,6 @@
   .diary-ai-summary-btn:hover { background: var(--bg-hover); }
   .diary-ai-summary-btn:disabled { opacity: 0.6; cursor: default; }
   .diary-ai-summary-status { font-size: 12px; color: var(--text-muted); }
-  .home-diary-ai-summary { font-size: 13px; color: var(--accent-text); margin: 4px 0; font-weight: 500; }
   .risk-item-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 3px; flex-shrink: 0; }
   .risk-item-dot.low { background: #639922; }
   .risk-item-dot.mid { background: #ef9f27; }
@@ -913,9 +898,6 @@
   .risk-item-del { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px; }
   .risk-item-del:hover { color: var(--text-primary); }
   .risk-item-del.confirm-active { color: #e0503c; font-weight: 600; font-size: 11px; }
-  .home-risk-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-  .home-risk-row:last-child { border-bottom: none; }
-  .home-risk-row .risk-item-dot { margin-top: 0; }
   .study-log-card { margin-top: 14px; padding: 16px 18px; }
   .study-log-list { display: flex; flex-direction: column; gap: 12px; max-height: 420px; overflow-y: auto; }
   .study-log-item { padding: 10px 0; border-top: 1px dashed var(--border); }
@@ -1135,6 +1117,7 @@
     <div class="menu-item" data-page="industry"><span class="menu-icon">&#128202;</span>산업분석</div>
     <div class="menu-item" data-page="trades"><span class="menu-icon">&#128221;</span>투자매매일지</div>
     <div class="menu-item" data-page="watchlist"><span class="menu-icon">&#128065;</span>워치리스트</div>
+    <div class="menu-item" data-page="backup"><span class="menu-icon">&#128190;</span>백업</div>
     <div class="sidebar-bottom" id="themeToggle"><span id="themeLabel">라이트 모드</span><span id="themeIcon">&#9728;</span></div>
   </div>
 
@@ -1621,6 +1604,30 @@
         <div class="pagination-controls" id="watchTablePagination"></div>
       </div>
     </div>
+
+    <div id="page-backup" class="page-section">
+      <div class="page-title">백업</div>
+      <div class="card" style="max-width:520px;">
+        <div class="doc-header-title" style="margin-bottom:8px;">저장 용량</div>
+        <div class="storage-bar-track">
+          <div id="storageBarFill" class="storage-bar-fill"></div>
+        </div>
+        <p id="storageUsageText" class="backup-desc" style="margin-top:8px;"></p>
+      </div>
+      <div class="card" style="max-width:520px; margin-top:14px;">
+        <div class="doc-header-title" style="margin-bottom:8px;">백업 파일 만들기</div>
+        <p class="backup-desc">일기, 캘린더, 공부, 몽키수업, 투자삶철학, 산업분석, 투자매매일지, 워치리스트, 주간 요약까지 지금까지 쓴 모든 기록을 파일 하나로 내려받아요.</p>
+        <button id="backupExportBtn" class="diary-edit-btn">백업 파일 다운로드</button>
+        <div id="backupExportStatus" class="backup-status"></div>
+      </div>
+      <div class="card" style="max-width:520px; margin-top:14px;">
+        <div class="doc-header-title" style="margin-bottom:8px;">백업 파일 가져오기</div>
+        <p class="backup-desc">이전에 다운로드한 백업 파일(.json)을 선택하면 지금 브라우저의 기록을 그 내용으로 덮어써요. 되돌릴 수 없으니 신중하게 진행해주세요.</p>
+        <input type="file" id="backupImportInput" accept="application/json" style="display:none;">
+        <button id="backupImportBtn" class="diary-edit-btn">백업 파일 가져오기</button>
+        <div id="backupImportStatus" class="backup-status"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1676,7 +1683,7 @@
       themeLabel.textContent = '라이트 모드';
       themeIcon.innerHTML = '&#9728;';
     }
-    localStorage.setItem('invest-journal-theme', theme);
+    safeLocalStorageSet('invest-journal-theme', theme);
   }
 
   const savedTheme = localStorage.getItem('invest-journal-theme') || 'light';
@@ -1697,6 +1704,7 @@
       item.classList.add('active');
       document.getElementById('page-' + item.dataset.page).classList.add('active');
       if (item.dataset.page === 'home' && typeof renderHomeDashboard === 'function') renderHomeDashboard();
+      if (item.dataset.page === 'backup' && typeof renderStorageUsage === 'function') renderStorageUsage();
     });
   });
 
@@ -1704,7 +1712,7 @@
   const MOOD_EMOJI = { great: '😀', good: '🙂', neutral: '😐', bad: '😕', terrible: '😢' };
   const STORAGE_KEY = 'invest-journal-diary';
   let diaryData = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-  function saveDiaryData() { localStorage.setItem(STORAGE_KEY, JSON.stringify(diaryData)); }
+  function saveDiaryData() { safeLocalStorageSet(STORAGE_KEY, JSON.stringify(diaryData)); }
   const AI_PROXY_URL = 'https://script.google.com/macros/s/AKfycby77NzSnbn5MFZJ-WW64P_gp__dIjrOvVrlwZHGJatiRDsMBp-CiA0SVaRXu7IhCEuk4w/exec';
 
   const EVENT_CATS = {
@@ -1717,7 +1725,7 @@
   };
   const EVENTS_KEY = 'invest-journal-calendar-events';
   let calendarEvents = JSON.parse(localStorage.getItem(EVENTS_KEY) || '{}');
-  function saveCalendarEvents() { localStorage.setItem(EVENTS_KEY, JSON.stringify(calendarEvents)); }
+  function saveCalendarEvents() { safeLocalStorageSet(EVENTS_KEY, JSON.stringify(calendarEvents)); }
 
   const today = new Date();
   let calYear = today.getFullYear();
@@ -1736,6 +1744,54 @@
     const d = document.createElement('div');
     d.textContent = str;
     return d.innerHTML;
+  }
+
+  function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+  function attachConfirmDelete(btn, onConfirm) {
+    let confirming = false;
+    let timer = null;
+    const original = btn.textContent;
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!confirming) {
+        confirming = true;
+        btn.textContent = '정말?';
+        btn.classList.add('confirm-active');
+        timer = setTimeout(() => {
+          confirming = false;
+          btn.textContent = original;
+          btn.classList.remove('confirm-active');
+        }, 2500);
+      } else {
+        clearTimeout(timer);
+        onConfirm();
+      }
+    });
+  }
+
+  /* 저장 실패(용량 초과 등) 시 조용히 사라지지 않도록 공통 처리 */
+  function showStorageError() {
+    let toast = document.getElementById('storageErrorToast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'storageErrorToast';
+      toast.className = 'storage-error-toast';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = '저장 공간이 부족해 방금 내용이 저장되지 못했어요. 백업 메뉴에서 파일을 받아두고 오래된 기록이나 사진을 정리해주세요.';
+    toast.classList.add('show');
+    clearTimeout(toast._hideTimer);
+    toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 5000);
+  }
+  function safeLocalStorageSet(key, value) {
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch (err) {
+      showStorageError();
+      return false;
+    }
   }
 
   /* 공용 페이지네이션 유틸 - 목록형 데이터에 재사용 (10개씩 페이지 전환) */
@@ -2389,6 +2445,48 @@
     document.execCommand('insertHTML', false, '<hr class="editor-hr"><div><br></div>');
   }
 
+  /* 서식 툴바(일기/공부기록/몽키수업/투자삶철학/산업분석) 공통 커맨드 처리 */
+  function handleToolbarCommand(editor, cmd, hlColor, textColor) {
+    if (!editor) return;
+    editor.focus();
+    if (hlColor) {
+      applyHighlight(hlColor);
+    } else if (textColor) {
+      document.execCommand('foreColor', false, textColor);
+    } else if (cmd === 'bold') {
+      document.execCommand('bold');
+    } else if (cmd === 'underline') {
+      document.execCommand('underline');
+    } else if (cmd === 'bullet') {
+      insertBulletList();
+    } else if (cmd === 'dash') {
+      insertDashList();
+    } else if (cmd === 'number') {
+      document.execCommand('insertOrderedList');
+    } else if (cmd === 'toggle') {
+      insertToggleBlock();
+    } else if (cmd === 'image') {
+      triggerImageInsert(editor);
+    } else if (cmd === 'quote') {
+      insertQuoteBlock();
+    } else if (cmd === 'hr') {
+      insertDivider();
+    } else {
+      return;
+    }
+    editor.dispatchEvent(new Event('input'));
+  }
+
+  /* 토글 블록(▶) 캐럿 클릭 공통 처리 */
+  function attachToggleCaretHandler(editor) {
+    editor.addEventListener('click', (e) => {
+      const caret = e.target.closest('.toggle-caret');
+      if (!caret) return;
+      const block = caret.closest('.toggle-block');
+      block.classList.toggle('open');
+    });
+  }
+
   function placeCaretAtStart(el) {
     const range = document.createRange();
     range.selectNodeContents(el);
@@ -2518,34 +2616,12 @@
       const swatchHl = e.target.closest('button[data-hl]');
       const swatchColor = e.target.closest('button[data-color]');
       const btn = e.target.closest('button[data-cmd]');
-      editor.focus();
-      if (swatchHl) {
-        applyHighlight(swatchHl.dataset.hl);
-      } else if (swatchColor) {
-        document.execCommand('foreColor', false, swatchColor.dataset.color);
-      } else if (btn) {
-        const cmd = btn.dataset.cmd;
-        if (cmd === 'bold') document.execCommand('bold');
-        else if (cmd === 'underline') document.execCommand('underline');
-        else if (cmd === 'bullet') insertBulletList();
-        else if (cmd === 'dash') insertDashList();
-        else if (cmd === 'number') document.execCommand('insertOrderedList');
-        else if (cmd === 'toggle') insertToggleBlock();
-        else if (cmd === 'image') triggerImageInsert(editor);
-        else if (cmd === 'quote') insertQuoteBlock();
-        else if (cmd === 'hr') insertDivider();
-      } else {
-        return;
-      }
-      editor.dispatchEvent(new Event('input'));
+      if (swatchHl) handleToolbarCommand(editor, null, swatchHl.dataset.hl, null);
+      else if (swatchColor) handleToolbarCommand(editor, null, null, swatchColor.dataset.color);
+      else if (btn) handleToolbarCommand(editor, btn.dataset.cmd, null, null);
     });
 
-    editor.addEventListener('click', (e) => {
-      const caret = e.target.closest('.toggle-caret');
-      if (!caret) return;
-      const block = caret.closest('.toggle-block');
-      block.classList.toggle('open');
-    });
+    attachToggleCaretHandler(editor);
 
     editor.addEventListener('keydown', (e) => {
       if (e.key !== 'Backspace') return;
@@ -2581,7 +2657,7 @@
   if (!Array.isArray(studyData.checkTodos)) studyData.checkTodos = [];
   if (!Array.isArray(studyData.log)) studyData.log = [];
   if (!Array.isArray(studyData.riskItems)) studyData.riskItems = [];
-  function saveStudyData() { localStorage.setItem(STUDY_KEY, JSON.stringify(studyData)); }
+  function saveStudyData() { safeLocalStorageSet(STUDY_KEY, JSON.stringify(studyData)); }
 
   function saveAllStudyEdits() {}
 
@@ -2991,12 +3067,7 @@
   function attachStudyLogEditorBehaviors(editor) {
     attachSmartEnter(editor);
     editor.addEventListener('focus', () => { activeStudyLogEditor = editor; });
-    editor.addEventListener('click', (e) => {
-      const caret = e.target.closest('.toggle-caret');
-      if (!caret) return;
-      const block = caret.closest('.toggle-block');
-      block.classList.toggle('open');
-    });
+    attachToggleCaretHandler(editor);
     editor.addEventListener('keydown', (e) => {
       if (e.key !== 'Backspace') return;
       const sel = window.getSelection();
@@ -3025,26 +3096,9 @@
     const swatchHl = e.target.closest('button[data-hl]');
     const swatchColor = e.target.closest('button[data-color]');
     const btn = e.target.closest('button[data-cmd]');
-    activeStudyLogEditor.focus();
-    if (swatchHl) {
-      applyHighlight(swatchHl.dataset.hl);
-    } else if (swatchColor) {
-      document.execCommand('foreColor', false, swatchColor.dataset.color);
-    } else if (btn) {
-      const cmd = btn.dataset.cmd;
-      if (cmd === 'bold') document.execCommand('bold');
-      else if (cmd === 'underline') document.execCommand('underline');
-      else if (cmd === 'bullet') insertBulletList();
-      else if (cmd === 'dash') insertDashList();
-      else if (cmd === 'number') document.execCommand('insertOrderedList');
-      else if (cmd === 'toggle') insertToggleBlock();
-      else if (cmd === 'image') triggerImageInsert(activeStudyLogEditor);
-      else if (cmd === 'quote') insertQuoteBlock();
-      else if (cmd === 'hr') insertDivider();
-    } else {
-      return;
-    }
-    activeStudyLogEditor.dispatchEvent(new Event('input'));
+    if (swatchHl) handleToolbarCommand(activeStudyLogEditor, null, swatchHl.dataset.hl, null);
+    else if (swatchColor) handleToolbarCommand(activeStudyLogEditor, null, null, swatchColor.dataset.color);
+    else if (btn) handleToolbarCommand(activeStudyLogEditor, btn.dataset.cmd, null, null);
   });
 
   document.getElementById('studyTodoInput').addEventListener('keydown', (e) => {
@@ -3095,7 +3149,7 @@
   try { monkeyData = JSON.parse(localStorage.getItem(MONKEY_KEY) || '{}'); } catch (e) { monkeyData = {}; }
   if (!monkeyData || typeof monkeyData !== 'object') monkeyData = {};
   if (!Array.isArray(monkeyData.log)) monkeyData.log = [];
-  function saveMonkeyData() { localStorage.setItem(MONKEY_KEY, JSON.stringify(monkeyData)); }
+  function saveMonkeyData() { safeLocalStorageSet(MONKEY_KEY, JSON.stringify(monkeyData)); }
 
   let monkeySearchQuery = '';
   let monkeyPeriodFilter = 'all';
@@ -3287,26 +3341,9 @@
     const swatchHl = e.target.closest('button[data-hl]');
     const swatchColor = e.target.closest('button[data-color]');
     const btn = e.target.closest('button[data-cmd]');
-    activeMonkeyLogEditor.focus();
-    if (swatchHl) {
-      applyHighlight(swatchHl.dataset.hl);
-    } else if (swatchColor) {
-      document.execCommand('foreColor', false, swatchColor.dataset.color);
-    } else if (btn) {
-      const cmd = btn.dataset.cmd;
-      if (cmd === 'bold') document.execCommand('bold');
-      else if (cmd === 'underline') document.execCommand('underline');
-      else if (cmd === 'bullet') insertBulletList();
-      else if (cmd === 'dash') insertDashList();
-      else if (cmd === 'number') document.execCommand('insertOrderedList');
-      else if (cmd === 'toggle') insertToggleBlock();
-      else if (cmd === 'image') triggerImageInsert(activeMonkeyLogEditor);
-      else if (cmd === 'quote') insertQuoteBlock();
-      else if (cmd === 'hr') insertDivider();
-    } else {
-      return;
-    }
-    activeMonkeyLogEditor.dispatchEvent(new Event('input'));
+    if (swatchHl) handleToolbarCommand(activeMonkeyLogEditor, null, swatchHl.dataset.hl, null);
+    else if (swatchColor) handleToolbarCommand(activeMonkeyLogEditor, null, null, swatchColor.dataset.color);
+    else if (btn) handleToolbarCommand(activeMonkeyLogEditor, btn.dataset.cmd, null, null);
   });
 
   document.getElementById('monkeyLogDateInput').value = formatDateKey(new Date());
@@ -3349,8 +3386,7 @@
   /* ===== 투자삶철학 (폴더 트리 + 문서) ===== */
   const PHIL_TREE_KEY = 'invest-journal-philosophy-tree';
   let philTree = JSON.parse(localStorage.getItem(PHIL_TREE_KEY) || '{"folders":[]}');
-  function savePhilTree() { localStorage.setItem(PHIL_TREE_KEY, JSON.stringify(philTree)); }
-  function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function savePhilTree() { safeLocalStorageSet(PHIL_TREE_KEY, JSON.stringify(philTree)); }
 
   let currentFolderId = null;
   let currentPageId = null;
@@ -3364,28 +3400,6 @@
     const page = folder.pages.find(p => p.id === pageId);
     if (!page) return null;
     return { folder, page };
-  }
-
-  function attachConfirmDelete(btn, onConfirm) {
-    let confirming = false;
-    let timer = null;
-    const original = btn.textContent;
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (!confirming) {
-        confirming = true;
-        btn.textContent = '정말?';
-        btn.classList.add('confirm-active');
-        timer = setTimeout(() => {
-          confirming = false;
-          btn.textContent = original;
-          btn.classList.remove('confirm-active');
-        }, 2500);
-      } else {
-        clearTimeout(timer);
-        onConfirm();
-      }
-    });
   }
 
   function makeInlineInput(placeholder, onSubmit, onCancel) {
@@ -3636,9 +3650,9 @@
       } catch (e) { migratedNodes = []; }
     }
     industryTree = { nodes: migratedNodes };
-    localStorage.setItem(INDUSTRY_TREE_KEY, JSON.stringify(industryTree));
+    safeLocalStorageSet(INDUSTRY_TREE_KEY, JSON.stringify(industryTree));
   }
-  function saveIndustryTree() { localStorage.setItem(INDUSTRY_TREE_KEY, JSON.stringify(industryTree)); }
+  function saveIndustryTree() { safeLocalStorageSet(INDUSTRY_TREE_KEY, JSON.stringify(industryTree)); }
 
   function findIndustryNodeById(id, nodes) {
     nodes = nodes || industryTree.nodes;
@@ -3880,7 +3894,7 @@
   const TRADES_KEY = 'invest-journal-trades';
   let trades = [];
   try { trades = JSON.parse(localStorage.getItem(TRADES_KEY) || '[]'); } catch (e) { trades = []; }
-  function saveTrades() { localStorage.setItem(TRADES_KEY, JSON.stringify(trades)); }
+  function saveTrades() { safeLocalStorageSet(TRADES_KEY, JSON.stringify(trades)); }
 
   let tradeSearchQuery = '';
   let tradeSymbolFilter = 'all';
@@ -3987,7 +4001,7 @@
   let watchList;
   try { watchList = JSON.parse(localStorage.getItem(WATCH_KEY) || '[]'); } catch (e) { watchList = []; }
   if (!Array.isArray(watchList)) watchList = [];
-  function saveWatchList() { localStorage.setItem(WATCH_KEY, JSON.stringify(watchList)); }
+  function saveWatchList() { safeLocalStorageSet(WATCH_KEY, JSON.stringify(watchList)); }
   let watchSearchQuery = '';
   let watchPage = 1;
 
@@ -4291,13 +4305,13 @@
   let weeklyAiData;
   try { weeklyAiData = JSON.parse(localStorage.getItem(WEEKLY_AI_KEY) || '{}'); } catch (e) { weeklyAiData = {}; }
   if (!weeklyAiData || typeof weeklyAiData !== 'object') weeklyAiData = {};
-  function saveWeeklyAiData() { localStorage.setItem(WEEKLY_AI_KEY, JSON.stringify(weeklyAiData)); }
+  function saveWeeklyAiData() { safeLocalStorageSet(WEEKLY_AI_KEY, JSON.stringify(weeklyAiData)); }
 
   const WEEKLY_MEMO_KEY = 'invest-journal-weekly-memo';
   let weeklyMemoData;
   try { weeklyMemoData = JSON.parse(localStorage.getItem(WEEKLY_MEMO_KEY) || '{}'); } catch (e) { weeklyMemoData = {}; }
   if (!weeklyMemoData || typeof weeklyMemoData !== 'object') weeklyMemoData = {};
-  function saveWeeklyMemoData() { localStorage.setItem(WEEKLY_MEMO_KEY, JSON.stringify(weeklyMemoData)); }
+  function saveWeeklyMemoData() { safeLocalStorageSet(WEEKLY_MEMO_KEY, JSON.stringify(weeklyMemoData)); }
 
   let weeklyReportOffset = 0;
   const WEEKDAY_LABELS = ['일', '월', '화', '수', '목', '금', '토'];
@@ -4786,6 +4800,132 @@
   });
 
   renderWeeklyReport();
+
+  /* ===== 백업 (내보내기/가져오기) ===== */
+  const BACKUP_KEYS = [
+    'invest-journal-diary',
+    'invest-journal-calendar-events',
+    'invest-journal-study',
+    'invest-journal-monkey',
+    'invest-journal-philosophy-tree',
+    'invest-journal-industry-tree',
+    'invest-journal-trades',
+    'invest-journal-watchlist',
+    'invest-journal-weekly-ai',
+    'invest-journal-weekly-memo',
+    'invest-journal-theme'
+  ];
+
+  function renderStorageUsage() {
+    const fill = document.getElementById('storageBarFill');
+    const text = document.getElementById('storageUsageText');
+    if (!fill || !text) return;
+    let totalBytes = 0;
+    BACKUP_KEYS.forEach(k => {
+      const v = localStorage.getItem(k);
+      if (v) totalBytes += (k.length + v.length) * 2;
+    });
+    const SOFT_LIMIT_BYTES = 5 * 1024 * 1024;
+    const usedMB = (totalBytes / (1024 * 1024)).toFixed(2);
+    const pct = Math.min(100, Math.round((totalBytes / SOFT_LIMIT_BYTES) * 100));
+    fill.style.width = pct + '%';
+    fill.classList.remove('warn', 'danger');
+    let noteText = '';
+    if (pct >= 85) {
+      fill.classList.add('danger');
+      noteText = ' — 저장 공간이 거의 다 찼어요. 백업 파일을 받아두고, 사진이 많은 오래된 기록은 정리하는 걸 추천드려요.';
+    } else if (pct >= 60) {
+      fill.classList.add('warn');
+      noteText = ' — 저장 공간이 절반 이상 찼어요. 미리 백업해두시면 안전해요.';
+    }
+    text.textContent = '약 ' + usedMB + 'MB 사용 중 (브라우저 저장공간은 보통 5MB 안팎)' + noteText;
+  }
+
+  renderStorageUsage();
+
+  document.getElementById('backupExportBtn').addEventListener('click', () => {
+    const status = document.getElementById('backupExportStatus');
+    try {
+      const data = {};
+      BACKUP_KEYS.forEach(k => {
+        const v = localStorage.getItem(k);
+        if (v !== null) data[k] = v;
+      });
+      const payload = { app: 'invest-journal', exportedAt: new Date().toISOString(), data: data };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '투자기록_백업_' + formatDateKey(new Date()) + '.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      status.textContent = '백업 파일이 다운로드되었습니다.';
+      status.className = 'backup-status success';
+    } catch (err) {
+      status.textContent = '백업 파일 생성 중 오류가 발생했습니다.';
+      status.className = 'backup-status error';
+    }
+  });
+
+  let pendingImportPayload = null;
+
+  function renderImportConfirm() {
+    const status = document.getElementById('backupImportStatus');
+    status.className = 'backup-status';
+    status.innerHTML = '';
+    const msg = document.createElement('span');
+    const keyCount = Object.keys(pendingImportPayload.data || {}).length;
+    msg.textContent = '백업 파일 확인됨 (' + keyCount + '개 항목). 지금 기록을 덮어씁니다. ';
+    status.appendChild(msg);
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'weekly-ai-btn';
+    confirmBtn.textContent = '덮어쓰기 확인';
+    confirmBtn.addEventListener('click', () => {
+      try {
+        Object.keys(pendingImportPayload.data).forEach(k => {
+          if (BACKUP_KEYS.indexOf(k) === -1) return;
+          localStorage.setItem(k, pendingImportPayload.data[k]);
+        });
+        status.textContent = '가져오기가 완료되었습니다. 새로고침합니다...';
+        status.className = 'backup-status success';
+        setTimeout(() => location.reload(), 700);
+      } catch (err) {
+        status.textContent = '가져오는 중 오류가 발생했습니다.';
+        status.className = 'backup-status error';
+      }
+    });
+    status.appendChild(confirmBtn);
+  }
+
+  document.getElementById('backupImportBtn').addEventListener('click', () => {
+    document.getElementById('backupImportInput').click();
+  });
+
+  document.getElementById('backupImportInput').addEventListener('change', (e) => {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    const status = document.getElementById('backupImportStatus');
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        if (!parsed || typeof parsed.data !== 'object') throw new Error('invalid format');
+        pendingImportPayload = parsed;
+        renderImportConfirm();
+      } catch (err) {
+        status.textContent = '올바른 백업 파일이 아닙니다.';
+        status.className = 'backup-status error';
+      }
+    };
+    reader.onerror = () => {
+      status.textContent = '파일을 읽는 중 오류가 발생했습니다.';
+      status.className = 'backup-status error';
+    };
+    reader.readAsText(file);
+  });
 
   renderHomeDashboard();
 </script>
