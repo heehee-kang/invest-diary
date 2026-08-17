@@ -1110,7 +1110,6 @@
   <div class="sidebar">
     <div class="sidebar-title">MY INVEST LOG</div>
     <div class="menu-item active" data-page="home"><span class="menu-icon">&#9679;</span>홈</div>
-    <div class="menu-item" data-page="weekly"><span class="menu-icon">&#128197;</span>주간</div>
     <div class="menu-item" data-page="calendar"><span class="menu-icon">&#128197;</span>캘린더+일기</div>
     <div class="menu-item" data-page="study"><span class="menu-icon">&#128218;</span>공부</div>
     <div class="menu-item" data-page="monkey"><span class="menu-icon">&#128018;</span>몽키수업</div>
@@ -1138,67 +1137,73 @@
         <div class="home-week-grid" id="homeWeekGrid"></div>
       </div>
 
-      <div class="card home-report-card">
-        <div class="home-report-header">
-          <button class="cal-nav" id="homeReportPrev">&#8249;</button>
-          <div class="home-report-date-wrap">
-            <span class="home-report-date-label" id="homeReportDateLabel"></span>
-            <button class="home-report-date-btn" id="homeReportDateBtn" title="날짜 선택">&#128197;</button>
-            <input type="date" id="homeReportDateInput" class="home-report-date-input">
-          </div>
-          <button class="cal-nav" id="homeReportNext">&#8250;</button>
-        </div>
-        <div class="home-report-rule"></div>
-        <div id="homeReportBody"></div>
-      </div>
-    </div>
-
-    <div id="page-weekly" class="page-section">
-      <div class="page-title">주간</div>
       <div class="weekly-view-tabs">
-        <button type="button" class="weekly-view-tab active" data-view="report">리포트</button>
-        <button type="button" class="weekly-view-tab" data-view="archive">요약 모아보기</button>
+        <button type="button" class="weekly-view-tab active" data-homeview="day">오늘</button>
+        <button type="button" class="weekly-view-tab" data-homeview="week">이번 주</button>
       </div>
 
-      <div id="weeklyViewReport" class="weekly-view">
-        <div class="hashtag-search-bar" style="max-width:none;">
-          <input type="text" id="weeklySearchInput" placeholder="모든 주에서 검색 (#태그 포함)" style="max-width:none;">
-          <div class="hashtag-search-results" id="weeklySearchResults"></div>
+      <div id="homeViewDay" class="weekly-view">
+        <div class="card home-report-card">
+          <div class="home-report-header">
+            <button class="cal-nav" id="homeReportPrev">&#8249;</button>
+            <div class="home-report-date-wrap">
+              <span class="home-report-date-label" id="homeReportDateLabel"></span>
+              <button class="home-report-date-btn" id="homeReportDateBtn" title="날짜 선택">&#128197;</button>
+              <input type="date" id="homeReportDateInput" class="home-report-date-input">
+            </div>
+            <button class="cal-nav" id="homeReportNext">&#8250;</button>
+          </div>
+          <div class="home-report-rule"></div>
+          <div id="homeReportBody"></div>
         </div>
-        <div class="card broker-report-card">
-          <div class="broker-report-letterhead">
-            <div>
-              <p class="broker-report-kicker">WEEKLY REPORT</p>
-              <div class="home-report-header broker-report-nav">
-                <button class="cal-nav" id="weeklyReportPrev">&#8249;</button>
-                <span class="home-report-date-label" id="weeklyReportLabel"></span>
-                <button class="cal-nav" id="weeklyReportNext">&#8250;</button>
+      </div>
+
+      <div id="homeViewWeek" class="weekly-view" style="display:none;">
+        <div class="weekly-view-tabs">
+          <button type="button" class="weekly-view-tab active" data-view="report">리포트</button>
+          <button type="button" class="weekly-view-tab" data-view="archive">요약 모아보기</button>
+        </div>
+
+        <div id="weeklyViewReport" class="weekly-view">
+          <div class="hashtag-search-bar" style="max-width:none;">
+            <input type="text" id="weeklySearchInput" placeholder="모든 주에서 검색 (#태그 포함)" style="max-width:none;">
+            <div class="hashtag-search-results" id="weeklySearchResults"></div>
+          </div>
+          <div class="card broker-report-card">
+            <div class="broker-report-letterhead">
+              <div>
+                <p class="broker-report-kicker">WEEKLY REPORT</p>
+                <div class="home-report-header broker-report-nav">
+                  <button class="cal-nav" id="weeklyReportPrev">&#8249;</button>
+                  <span class="home-report-date-label" id="weeklyReportLabel"></span>
+                  <button class="cal-nav" id="weeklyReportNext">&#8250;</button>
+                </div>
               </div>
+              <div id="weeklyRiskBadge" class="broker-report-badge" style="display:none;"></div>
             </div>
-            <div id="weeklyRiskBadge" class="broker-report-badge" style="display:none;"></div>
-          </div>
 
-          <div class="broker-report-body">
-            <div id="weeklyAiHeadline" class="broker-report-headline"></div>
-            <div id="weeklyAiBullets" class="broker-report-keypoints"></div>
-            <div class="weekly-ai-box-actions">
-              <button id="weeklyAiBtn" class="weekly-ai-btn">요약 생성</button>
-              <span id="weeklyAiStatus" class="weekly-ai-status"></span>
+            <div class="broker-report-body">
+              <div id="weeklyAiHeadline" class="broker-report-headline"></div>
+              <div id="weeklyAiBullets" class="broker-report-keypoints"></div>
+              <div class="weekly-ai-box-actions">
+                <button id="weeklyAiBtn" class="weekly-ai-btn">요약 생성</button>
+                <span id="weeklyAiStatus" class="weekly-ai-status"></span>
+              </div>
+              <textarea id="weeklyAiEdit" class="weekly-ai-edit-textarea" style="display:none;"></textarea>
+
+              <div id="weeklyMarketBlock" class="broker-report-section"></div>
+              <div id="weeklyRiskNote" class="broker-report-risk-note" style="display:none;"></div>
+              <div id="weeklyTagRow" class="weekly-tag-row"></div>
+              <textarea id="weeklyMemoInput" class="weekly-memo-input" placeholder="이번 주 메모..."></textarea>
             </div>
-            <textarea id="weeklyAiEdit" class="weekly-ai-edit-textarea" style="display:none;"></textarea>
-
-            <div id="weeklyMarketBlock" class="broker-report-section"></div>
-            <div id="weeklyRiskNote" class="broker-report-risk-note" style="display:none;"></div>
-            <div id="weeklyTagRow" class="weekly-tag-row"></div>
-            <textarea id="weeklyMemoInput" class="weekly-memo-input" placeholder="이번 주 메모..."></textarea>
           </div>
         </div>
-      </div>
 
-      <div id="weeklyViewArchive" class="weekly-view" style="display:none;">
-        <div class="card">
-          <div class="doc-header-title" style="margin-bottom:10px;">주간 요약 모아보기</div>
-          <div id="weeklyArchiveList" class="weekly-archive-list"></div>
+        <div id="weeklyViewArchive" class="weekly-view" style="display:none;">
+          <div class="card">
+            <div class="doc-header-title" style="margin-bottom:10px;">주간 요약 모아보기</div>
+            <div id="weeklyArchiveList" class="weekly-archive-list"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -2669,6 +2674,17 @@
   if (!Array.isArray(studyData.riskItems)) studyData.riskItems = [];
   function saveStudyData() { safeLocalStorageSet(STUDY_KEY, JSON.stringify(studyData)); }
 
+  /* 오늘 공부할 것/오늘 시황은 매일 자정이 지나면 자동으로 비워짐 (공부기록에 남은 기록은 그대로 보존) */
+  (function resetDailyChecklistsIfNewDay() {
+    const todayKey = formatDateKey(new Date());
+    if (studyData.lastResetDate !== todayKey) {
+      studyData.todos = [];
+      studyData.checkTodos = [];
+      studyData.lastResetDate = todayKey;
+      saveStudyData();
+    }
+  })();
+
   function saveAllStudyEdits() {}
 
   /* ===== 리스크 (신호등 색 선택형 리스트) ===== */
@@ -2794,9 +2810,23 @@
 
   const STUDY_SOURCE_LABEL = { todo: '오늘 공부할 것', check: '오늘 시황' };
 
+  function makeCheckToggleBlockHtml(title) {
+    return '<div class="toggle-block"><div class="toggle-header" contenteditable="false"><span class="toggle-caret">\u25B6</span><span class="toggle-title-text" contenteditable="true">' + escapeHtml(title) + '</span></div><div class="toggle-body" contenteditable="true" data-placeholder="상세 내용을 적어보세요..."></div></div><div><br></div>';
+  }
+
   function logStudyItem(text, source) {
     if (!Array.isArray(studyData.log)) studyData.log = [];
-    studyData.log.unshift({ id: genId(), date: formatDateKey(new Date()), title: text, content: '', tags: [], source: source });
+    const todayKey = formatDateKey(new Date());
+    if (source === 'check') {
+      const existing = studyData.log.find(l => l.date === todayKey && l.source === 'check');
+      if (existing) {
+        existing.content = (existing.content || '') + makeCheckToggleBlockHtml(text);
+        return;
+      }
+      studyData.log.unshift({ id: genId(), date: todayKey, title: '오늘 시황', content: makeCheckToggleBlockHtml(text), tags: [], source: source });
+      return;
+    }
+    studyData.log.unshift({ id: genId(), date: todayKey, title: text, content: '', tags: [], source: source });
   }
 
   function renderChecklist(dataKey, listId, source) {
@@ -2950,6 +2980,7 @@
   }
 
   let studyLogSourceFilter = 'all';
+  const studyLogExpandedIds = new Set();
 
   function renderStudyLog() {
     const list = document.getElementById('studyLogList');
@@ -2973,11 +3004,17 @@
     const { pageItems: paginatedLog, page, totalPages } = paginateItems(filtered, studyLogPage, PAGE_SIZE);
     studyLogPage = page;
     paginatedLog.forEach(item => {
+      const isOpen = studyLogExpandedIds.has(item.id);
       const card = document.createElement('div');
-      card.className = 'study-log-item';
+      card.className = 'study-log-item monkey-log-item' + (isOpen ? ' open' : '');
 
       const header = document.createElement('div');
-      header.className = 'study-log-header';
+      header.className = 'study-log-header monkey-log-header';
+      header.style.cursor = 'pointer';
+      const caret = document.createElement('span');
+      caret.className = 'monkey-log-caret';
+      caret.textContent = '\u25B6';
+      header.appendChild(caret);
       const dateEl = document.createElement('span');
       dateEl.className = 'study-log-date';
       const parts = item.date.split('-');
@@ -3002,8 +3039,18 @@
         saveStudyData();
         renderStudyLog();
       });
+      del.addEventListener('click', (e) => e.stopPropagation());
       header.appendChild(del);
       card.appendChild(header);
+
+      const previewEl = document.createElement('div');
+      previewEl.className = 'monkey-log-preview';
+      const previewText = stripHtmlPreview(item.content, 60);
+      previewEl.innerHTML = previewText ? highlightMatch(previewText, q) : '내용 없음';
+      card.appendChild(previewEl);
+
+      const body = document.createElement('div');
+      body.className = 'monkey-log-body';
 
       const editor = document.createElement('div');
       editor.className = 'diary-editor study-log-content';
@@ -3014,9 +3061,11 @@
         item.content = editor.innerHTML;
         clearTimeout(editor._saveTimer);
         editor._saveTimer = setTimeout(saveStudyData, 400);
+        const updatedPreview = stripHtmlPreview(item.content, 60);
+        previewEl.textContent = updatedPreview || '내용 없음';
       });
       attachStudyLogEditorBehaviors(editor);
-      card.appendChild(editor);
+      body.appendChild(editor);
 
       const tagSection = document.createElement('div');
       tagSection.className = 'tag-section';
@@ -3055,7 +3104,14 @@
         chips.appendChild(chip);
       });
       tagSection.appendChild(chips);
-      card.appendChild(tagSection);
+      body.appendChild(tagSection);
+      card.appendChild(body);
+
+      header.addEventListener('click', () => {
+        if (studyLogExpandedIds.has(item.id)) studyLogExpandedIds.delete(item.id);
+        else studyLogExpandedIds.add(item.id);
+        card.classList.toggle('open');
+      });
 
       list.appendChild(card);
     });
@@ -4203,6 +4259,31 @@
     return (d.textContent || '').replace(/\s+/g, ' ').trim();
   }
 
+  /* "오늘 시황" 메모(불릿으로 쌓인 하나의 노트)를 개별 줄로 풀어냄 */
+  function extractBulletLines(html) {
+    const d = document.createElement('div');
+    d.innerHTML = html || '';
+    const lines = [];
+    Array.from(d.children).forEach(child => {
+      if (child.classList && child.classList.contains('toggle-block')) {
+        const titleEl = child.querySelector('.toggle-title-text');
+        const bodyEl = child.querySelector('.toggle-body');
+        const title = titleEl ? titleEl.textContent.trim() : '';
+        const body = bodyEl ? stripHtmlFull(bodyEl.innerHTML) : '';
+        const line = body ? (title + ' - ' + body) : title;
+        if (line) lines.push(line);
+        return;
+      }
+      const t = (child.textContent || '').replace(/^[•\u2022]\s*/, '').trim();
+      if (t) lines.push(t);
+    });
+    if (!lines.length) {
+      const whole = stripHtmlFull(html);
+      if (whole) lines.push(whole);
+    }
+    return lines;
+  }
+
   let homeReportDate = formatDateKey(new Date());
 
   function shiftDateKey(dateKey, delta) {
@@ -4247,11 +4328,12 @@
     const todoLines = studyLog.filter(e => e.date === dateKey && e.source === 'todo').map(e => e.title || '');
     sections.push({ label: '오늘 공부할 것', lines: todoLines });
 
-    const checkLines = studyLog.filter(e => e.date === dateKey && e.source === 'check').map(e => e.title || '');
+    const checkEntry = studyLog.find(e => e.date === dateKey && e.source === 'check');
+    const checkLines = checkEntry ? extractBulletLines(checkEntry.content) : [];
     sections.push({ label: '오늘 시황', lines: checkLines });
 
     const riskItemsAll = (typeof studyData !== 'undefined' && Array.isArray(studyData.riskItems)) ? studyData.riskItems : [];
-    const riskLines = riskItemsAll.filter(r => r.level === 'high' && formatDateKey(new Date(r.ts)) === dateKey).map(r => '\ud83d\udd34 ' + r.text);
+    const riskLines = riskItemsAll.filter(r => r.level === 'high' && formatDateKey(new Date(r.ts)) <= dateKey).map(r => '\ud83d\udd34 ' + r.text);
     sections.push({ label: '리스크', lines: riskLines, isRisk: true });
 
     body.innerHTML = sections.map(sec => {
@@ -4290,6 +4372,7 @@
     renderHomeReport(homeReportDate);
     renderHomeTodayDate();
     renderHomeWeek();
+    if (typeof renderWeeklyReport === 'function') renderWeeklyReport();
   }
 
   /* ===== 주간 리포트 ===== */
@@ -4325,6 +4408,7 @@
     const checkLines = [];
     const monkeyLines = [];
     const riskLines = [];
+    const riskShownIds = new Set();
     const diaryTags = new Set();
     const studyTags = new Set();
     const checkTags = new Set();
@@ -4364,9 +4448,7 @@
         (e.tags || []).forEach(tag => studyTags.add(tag));
       });
       studyLog.filter(e => e.date === dateKey && e.source === 'check').forEach(e => {
-        const excerpt = stripHtmlFull(e.content);
-        const text = excerpt ? ((e.title || '') + ' - ' + excerpt) : (e.title || '');
-        checkLines.push({ wd: wd, text: text });
+        extractBulletLines(e.content).forEach(line => checkLines.push({ wd: wd, text: line }));
         (e.tags || []).forEach(tag => checkTags.add(tag));
       });
 
@@ -4379,7 +4461,11 @@
       });
 
       const riskItemsAll = (typeof studyData !== 'undefined' && Array.isArray(studyData.riskItems)) ? studyData.riskItems : [];
-      riskItemsAll.filter(r => r.level === 'high' && formatDateKey(new Date(r.ts)) === dateKey).forEach(r => riskLines.push({ wd: wd, text: '\ud83d\udd34 ' + r.text }));
+      riskItemsAll.filter(r => r.level === 'high' && formatDateKey(new Date(r.ts)) <= dateKey).forEach(r => {
+        if (riskShownIds.has(r.id)) return;
+        riskShownIds.add(r.id);
+        riskLines.push({ wd: wd, text: '\ud83d\udd34 ' + r.text });
+      });
     });
 
     return [
@@ -4774,20 +4860,30 @@
       item.addEventListener('click', () => {
         weeklyReportOffset = weekStartKeyToOffset(item.dataset.week);
         renderWeeklyReport();
-        document.querySelectorAll('.weekly-view-tab').forEach(t => t.classList.toggle('active', t.dataset.view === 'report'));
+        document.querySelectorAll('.weekly-view-tab[data-view]').forEach(t => t.classList.toggle('active', t.dataset.view === 'report'));
         document.getElementById('weeklyViewReport').style.display = 'block';
         document.getElementById('weeklyViewArchive').style.display = 'none';
       });
     });
   }
 
-  document.querySelectorAll('.weekly-view-tab').forEach(tab => {
+  document.querySelectorAll('.weekly-view-tab[data-view]').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('.weekly-view-tab').forEach(t => t.classList.toggle('active', t === tab));
+      document.querySelectorAll('.weekly-view-tab[data-view]').forEach(t => t.classList.toggle('active', t === tab));
       const view = tab.dataset.view;
       document.getElementById('weeklyViewReport').style.display = view === 'report' ? 'block' : 'none';
       document.getElementById('weeklyViewArchive').style.display = view === 'archive' ? 'block' : 'none';
       if (view === 'archive') renderWeeklyArchiveList();
+    });
+  });
+
+  document.querySelectorAll('.weekly-view-tab[data-homeview]').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.weekly-view-tab[data-homeview]').forEach(t => t.classList.toggle('active', t === tab));
+      const view = tab.dataset.homeview;
+      document.getElementById('homeViewDay').style.display = view === 'day' ? 'block' : 'none';
+      document.getElementById('homeViewWeek').style.display = view === 'week' ? 'block' : 'none';
+      if (view === 'week') renderWeeklyReport();
     });
   });
 
