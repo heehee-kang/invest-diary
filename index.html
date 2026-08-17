@@ -952,8 +952,9 @@
     font-size: 11px;
   }
   .tag-chip-del { cursor: pointer; font-size: 11px; }
-  mark.hl { background: #ffe680; color: inherit; border-radius: 2px; padding: 0 1px; }
-  html[data-theme="dark"] mark.hl { background: #6b5d1e; }
+  .diary-editor span[style*="background-color"] { border-radius: 2px; padding: 0 1px; }
+  mark.search-hit { background: #ffe680; color: inherit; border-radius: 2px; padding: 0 1px; }
+  html[data-theme="dark"] mark.search-hit { background: #6b5d1e; }
   .toggle-block {
     border-left: 2px solid var(--border);
     padding-left: 8px;
@@ -1746,6 +1747,21 @@
     return d.innerHTML;
   }
 
+  /* 검색어와 일치하는 부분을 강조 표시(대소문자 무시, 첫 일치부터 전체) */
+  function highlightMatch(text, query) {
+    const escaped = escapeHtml(text || '');
+    const q = (query || '').trim();
+    if (!q) return escaped;
+    const escapedQuery = escapeHtml(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    if (!escapedQuery) return escaped;
+    try {
+      const re = new RegExp('(' + escapedQuery + ')', 'ig');
+      return escaped.replace(re, '<mark class="search-hit">$1</mark>');
+    } catch (err) {
+      return escaped;
+    }
+  }
+
   function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
 
   function attachConfirmDelete(btn, onConfirm) {
@@ -2161,6 +2177,7 @@
   const hashtagSearchResults = document.getElementById('hashtagSearchResults');
   let hashtagResultsPage = 1;
   let hashtagLastMatches = [];
+  let hashtagLastQuery = '';
 
   function renderHashtagResults() {
     const matches = hashtagLastMatches;
@@ -2180,7 +2197,7 @@
       header.className = 'hashtag-result-header';
       const snippet = m2.content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40);
       header.innerHTML = '<div class="hashtag-result-date">' + formatDisplayDate(m2.key) + ' <span class="hashtag-result-expand-hint">(클릭해서 내용 보기)</span></div>' +
-        '<div class="hashtag-result-tags">' + m2.tags.map(t => '#' + escapeHtml(t)).join(' ') + '</div>' +
+        '<div class="hashtag-result-tags">' + m2.tags.map(t => '#' + highlightMatch(t, hashtagLastQuery)).join(' ') + '</div>' +
         (snippet ? '<div class="hashtag-result-snippet">' + escapeHtml(snippet) + '</div>' : '');
       header.addEventListener('click', () => {
         item.classList.toggle('expanded');
@@ -2219,6 +2236,7 @@
 
   hashtagSearchInput.addEventListener('input', () => {
     const query = hashtagSearchInput.value.trim().replace(/^#/, '').toLowerCase();
+    hashtagLastQuery = query;
     if (!query) {
       hashtagSearchResults.classList.remove('open');
       hashtagSearchResults.innerHTML = '';
@@ -2387,29 +2405,10 @@
   function applyHighlight(color) {
     const sel = window.getSelection();
     if (!sel.rangeCount || sel.isCollapsed) return;
-    const range = sel.getRangeAt(0);
-    const mark = document.createElement('mark');
-    mark.className = 'hl';
-    mark.style.background = color;
-    try {
-      range.surroundContents(mark);
-    } catch (err) {
-      const contents = range.extractContents();
-      mark.appendChild(contents);
-      range.insertNode(mark);
-    }
-    // 형광펜 뒤에 보이지 않는 빈 문자를 심어 커서가 확실히 형광펜 밖에 위치하도록 함
-    const spacer = document.createTextNode('\u200B');
-    if (mark.nextSibling) {
-      mark.parentNode.insertBefore(spacer, mark.nextSibling);
-    } else {
-      mark.parentNode.appendChild(spacer);
-    }
-    const afterRange = document.createRange();
-    afterRange.setStart(spacer, 1);
-    afterRange.collapse(true);
-    sel.removeAllRanges();
-    sel.addRange(afterRange);
+    document.execCommand('styleWithCSS', false, true);
+    const ok = document.execCommand('hiliteColor', false, color);
+    if (!ok) document.execCommand('backColor', false, color);
+    document.execCommand('styleWithCSS', false, false);
   }
 
   function insertBulletList() {
@@ -2448,7 +2447,7 @@
   /* 서식 툴바(일기/공부기록/몽키수업/투자삶철학/산업분석) 공통 커맨드 처리 */
   function handleToolbarCommand(editor, cmd, hlColor, textColor) {
     if (!editor) return;
-    editor.focus();
+    if (!editor.contains(document.activeElement)) editor.focus();
     if (hlColor) {
       applyHighlight(hlColor);
     } else if (textColor) {
@@ -2484,6 +2483,37 @@
       if (!caret) return;
       const block = caret.closest('.toggle-block');
       block.classList.toggle('open');
+    });
+  }
+
+  /* 토글 블록에서 제목/본문이 비어있을 때 Backspace로 지우는 공통 처리 - 제목에 내용이 남아있으면 실수로 지워지지 않도록 본문+제목이 둘 다 비어있을 때만 블록 전체 삭제 */
+  function attachToggleBackspaceHandler(editor) {
+    editor.addEventListener('keydown', (e) => {
+      if (e.key !== 'Backspace') return;
+      const sel = window.getSelection();
+      if (!sel.rangeCount || !sel.isCollapsed) return;
+      const range = sel.getRangeAt(0);
+      if (range.startOffset !== 0) return;
+      const node = range.startContainer;
+      const titleEl = node.nodeType === 3
+        ? node.parentElement.closest('.toggle-title-text')
+        : (node.closest ? node.closest('.toggle-title-text') : null);
+      const bodyEl = node.nodeType === 3
+        ? node.parentElement.closest('.toggle-body')
+        : (node.closest ? node.closest('.toggle-body') : null);
+      const targetEl = titleEl || bodyEl;
+      if (!targetEl) return;
+      if (targetEl.textContent.trim() !== '') return;
+      const block = targetEl.closest('.toggle-block');
+      if (!block) return;
+      const titleTextEl = block.querySelector('.toggle-title-text');
+      const bodyTextEl = block.querySelector('.toggle-body');
+      const titleEmpty = !titleTextEl || titleTextEl.textContent.trim() === '' || titleTextEl.textContent.trim() === '토글 제목';
+      const bodyEmpty = !bodyTextEl || bodyTextEl.textContent.trim() === '';
+      if (!(titleEmpty && bodyEmpty)) return;
+      e.preventDefault();
+      block.remove();
+      editor.dispatchEvent(new Event('input'));
     });
   }
 
@@ -2612,6 +2642,7 @@
     if (!toolbar || !editor) return;
     attachSmartEnter(editor);
 
+    toolbar.addEventListener('mousedown', (e) => e.preventDefault());
     toolbar.addEventListener('click', (e) => {
       const swatchHl = e.target.closest('button[data-hl]');
       const swatchColor = e.target.closest('button[data-color]');
@@ -2622,28 +2653,7 @@
     });
 
     attachToggleCaretHandler(editor);
-
-    editor.addEventListener('keydown', (e) => {
-      if (e.key !== 'Backspace') return;
-      const sel = window.getSelection();
-      if (!sel.rangeCount || !sel.isCollapsed) return;
-      const range = sel.getRangeAt(0);
-      if (range.startOffset !== 0) return;
-      const titleEl = range.startContainer.nodeType === 3
-        ? range.startContainer.parentElement.closest('.toggle-title-text')
-        : (range.startContainer.closest ? range.startContainer.closest('.toggle-title-text') : null);
-      const bodyEl = range.startContainer.nodeType === 3
-        ? range.startContainer.parentElement.closest('.toggle-body')
-        : (range.startContainer.closest ? range.startContainer.closest('.toggle-body') : null);
-      const targetEl = titleEl || bodyEl;
-      if (!targetEl) return;
-      if (targetEl.textContent.trim() !== '') return;
-      const block = targetEl.closest('.toggle-block');
-      if (!block) return;
-      e.preventDefault();
-      block.remove();
-      editor.dispatchEvent(new Event('input'));
-    });
+    attachToggleBackspaceHandler(editor);
   }
 
   bindRichEditor('diaryToolbar', 'diaryEditor');
@@ -2948,7 +2958,7 @@
     const q = studySearchQuery.trim().toLowerCase();
     renderStudyLogTagFilters();
     const filtered = log.filter(item => {
-      if (q && !((item.title || item.text || '').toLowerCase().includes(q) || (item.content || '').toLowerCase().includes(q))) return false;
+      if (q && !((item.title || item.text || '').toLowerCase().includes(q) || stripHtmlFull(item.content).toLowerCase().includes(q))) return false;
       if (studyTagFilter && !(item.tags || []).includes(studyTagFilter)) return false;
       if (!studyItemInPeriod(item)) return false;
       if (studyLogSourceFilter !== 'all' && item.source !== studyLogSourceFilter) return false;
@@ -2975,7 +2985,7 @@
       header.appendChild(dateEl);
       const titleEl = document.createElement('span');
       titleEl.className = 'study-log-title';
-      titleEl.textContent = item.title || item.text || '';
+      titleEl.innerHTML = highlightMatch(item.title || item.text || '', q);
       header.appendChild(titleEl);
       if (item.source && STUDY_SOURCE_LABEL[item.source]) {
         const srcBadge = document.createElement('span');
@@ -3068,29 +3078,10 @@
     attachSmartEnter(editor);
     editor.addEventListener('focus', () => { activeStudyLogEditor = editor; });
     attachToggleCaretHandler(editor);
-    editor.addEventListener('keydown', (e) => {
-      if (e.key !== 'Backspace') return;
-      const sel = window.getSelection();
-      if (!sel.rangeCount || !sel.isCollapsed) return;
-      const range = sel.getRangeAt(0);
-      if (range.startOffset !== 0) return;
-      const titleEl = range.startContainer.nodeType === 3
-        ? range.startContainer.parentElement.closest('.toggle-title-text')
-        : (range.startContainer.closest ? range.startContainer.closest('.toggle-title-text') : null);
-      const bodyEl = range.startContainer.nodeType === 3
-        ? range.startContainer.parentElement.closest('.toggle-body')
-        : (range.startContainer.closest ? range.startContainer.closest('.toggle-body') : null);
-      const targetEl = titleEl || bodyEl;
-      if (!targetEl) return;
-      if (targetEl.textContent.trim() !== '') return;
-      const block = targetEl.closest('.toggle-block');
-      if (!block) return;
-      e.preventDefault();
-      block.remove();
-      editor.dispatchEvent(new Event('input'));
-    });
+    attachToggleBackspaceHandler(editor);
   }
 
+  document.getElementById('studyLogToolbar').addEventListener('mousedown', (e) => e.preventDefault());
   document.getElementById('studyLogToolbar').addEventListener('click', (e) => {
     if (!activeStudyLogEditor) return;
     const swatchHl = e.target.closest('button[data-hl]');
@@ -3202,7 +3193,7 @@
     const q = monkeySearchQuery.trim().toLowerCase();
     renderMonkeyLogTagFilters();
     const filtered = log.filter(item => {
-      if (q && !((item.title || '').toLowerCase().includes(q) || (item.content || '').toLowerCase().includes(q))) return false;
+      if (q && !((item.title || '').toLowerCase().includes(q) || stripHtmlFull(item.content).toLowerCase().includes(q))) return false;
       if (monkeyTagFilter && !(item.tags || []).includes(monkeyTagFilter)) return false;
       if (!monkeyItemInPeriod(item)) return false;
       return true;
@@ -3235,7 +3226,7 @@
       header.appendChild(dateEl);
       const titleEl = document.createElement('span');
       titleEl.className = 'study-log-title';
-      titleEl.textContent = item.title || '';
+      titleEl.innerHTML = highlightMatch(item.title || '', q);
       header.appendChild(titleEl);
       const del = document.createElement('button');
       del.className = 'study-log-del';
@@ -3253,7 +3244,7 @@
       const previewEl = document.createElement('div');
       previewEl.className = 'monkey-log-preview';
       const previewText = stripHtmlPreview(item.content, 60);
-      previewEl.textContent = previewText || '내용 없음';
+      previewEl.innerHTML = previewText ? highlightMatch(previewText, q) : '내용 없음';
       card.appendChild(previewEl);
 
       const body = document.createElement('div');
@@ -3336,6 +3327,7 @@
     renderMonkeyLog();
   });
 
+  document.getElementById('monkeyLogToolbar').addEventListener('mousedown', (e) => e.preventDefault());
   document.getElementById('monkeyLogToolbar').addEventListener('click', (e) => {
     if (!activeMonkeyLogEditor) return;
     const swatchHl = e.target.closest('button[data-hl]');
@@ -4742,7 +4734,7 @@
       return '<div class="weekly-search-result-item" data-week="' + weekStartKey + '">' +
         '<span class="weekly-search-result-week">' + formatWeekRangeLabel(weekStartKey) + '</span>' +
         '<span class="weekly-search-result-cat">' + escapeHtml(r.cat) + '</span>' +
-        escapeHtml(r.text) + '<span style="color:var(--text-accent);">' + escapeHtml(tagsText) + '</span>' +
+        highlightMatch(r.text, q) + '<span style="color:var(--text-accent);">' + highlightMatch(tagsText, q) + '</span>' +
         '</div>';
     }).join('');
     resultsEl.classList.add('open');
