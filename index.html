@@ -3004,7 +3004,7 @@
     const { pageItems: paginatedLog, page, totalPages } = paginateItems(filtered, studyLogPage, PAGE_SIZE);
     studyLogPage = page;
     paginatedLog.forEach(item => {
-      const isOpen = studyLogExpandedIds.has(item.id);
+      const isOpen = studyLogExpandedIds.has(item.id) || !!q;
       const card = document.createElement('div');
       card.className = 'study-log-item monkey-log-item' + (isOpen ? ' open' : '');
 
@@ -3057,6 +3057,11 @@
       editor.contentEditable = 'true';
       editor.setAttribute('data-placeholder', '공부한 내용을 적어보세요...');
       editor.innerHTML = item.content || '';
+      if (q) {
+        editor.querySelectorAll('.toggle-block').forEach(block => {
+          if (block.textContent.toLowerCase().includes(q)) block.classList.add('open');
+        });
+      }
       editor.addEventListener('input', () => {
         item.content = editor.innerHTML;
         clearTimeout(editor._saveTimer);
@@ -3264,7 +3269,7 @@
     const { pageItems: paginatedLog, page, totalPages } = paginateItems(filtered, monkeyLogPage, PAGE_SIZE);
     monkeyLogPage = page;
     paginatedLog.forEach(item => {
-      const isOpen = monkeyExpandedIds.has(item.id);
+      const isOpen = monkeyExpandedIds.has(item.id) || !!q;
       const card = document.createElement('div');
       card.className = 'study-log-item monkey-log-item' + (isOpen ? ' open' : '');
 
@@ -3311,6 +3316,11 @@
       editor.contentEditable = 'true';
       editor.setAttribute('data-placeholder', '오늘 배운 내용을 적어보세요...');
       editor.innerHTML = item.content || '';
+      if (q) {
+        editor.querySelectorAll('.toggle-block').forEach(block => {
+          if (block.textContent.toLowerCase().includes(q)) block.classList.add('open');
+        });
+      }
       editor.addEventListener('focus', () => { activeMonkeyLogEditor = editor; });
       editor.addEventListener('input', () => {
         item.content = editor.innerHTML;
